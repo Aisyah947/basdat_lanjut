@@ -11,12 +11,12 @@
     </div>
 
     <div class="menu-section">Data Master</div>
-
     <div class="menu-item <?= $action == 'Menu' ? 'active' : '' ?>">
-        <a href="index.php?action=Menu">
-            <i class="fas fa-pizza-slice"></i> <span>Menu</span>
-        </a>
-    </div>
+    <a href="../Menu.php">
+        <i class="fas fa-pizza-slice"></i> <span>Menu</span>
+    </a>
+</div>
+
 
     <div class="menu-item <?= $action == 'Pesanan' ? 'active' : '' ?>">
         <a href="index.php?action=Pesanan">
