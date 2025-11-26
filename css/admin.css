@@ -373,10 +373,7 @@ body {
 }
 
 /* Menu */
-.content {
-    padding: 20px;
-    margin-left: 260px;
-}
+
 
 .page-title {
     font-size: 26px;
@@ -429,14 +426,14 @@ body {
 .menu-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 20px;
+    gap: 30px;
 }
 
 /* Card */
 .menu-card {
     background: #fff;
     padding: 12px;
-    border-radius: 10px;
+    border-radius: 20px;
     box-shadow: 0px 2px 6px rgba(0,0,0,0.15);
 }
 

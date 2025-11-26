@@ -1,6 +1,6 @@
 <?php
-include("../config/database.php");
-include("../models/RestoranModel.php");
+include_once __DIR__ . '/../models/RestoranModel.php';
+include_once __DIR__ . '/../config/database.php';
 
 $db = new Database();
 $conn = $db->getConnection();
@@ -9,7 +9,7 @@ $model = new RestoranModel($conn);
 $allPesanan = $model->getAllPesanan();
 ?>
 
-<?php include 'layout/header.php'; ?>      
+<?php include_once('layout/header.php'); ?>     
 <a href="tambah_pesanan.php" class="btn-add">Tambah Pesanan Baru</a>
 <table>
     <thead>
@@ -51,4 +51,4 @@ $allPesanan = $model->getAllPesanan();
     </tbody>
 </table>
 
-<?php include 'layout/footer.php'; ?>
+<?php include_once __DIR__ . '/layout/footer.php';?>

@@ -1,6 +1,7 @@
 <?php
-include_once '../models/RestoranModel.php';
-include_once '../config/database.php';
+include_once __DIR__ . '/../models/RestoranModel.php';
+include_once __DIR__ . '/../config/database.php';
+
 
 $db = new Database();
 $conn = $db->getConnection();
@@ -18,8 +19,7 @@ $menuData = $id_kategori
     : $model->getAllMenu();
 ?>
 
-<?php include '../views/layout/header.php'; ?>
-<?php include '../views/layout/sidebar.php'; ?>
+<?php include_once __DIR__ . '/layout/header.php'; ?>
 
 <div class="content">
 
@@ -37,19 +37,21 @@ $menuData = $id_kategori
     </div>
 
     <!-- Filter Kategori -->
+    <!-- Filter Kategori -->
     <div class="kategori-filter">
-        <a href="menu.php" 
+        <a href="Menu.php" 
            class="btn btn-kategori <?= $id_kategori ? '' : 'active' ?>">
             Semua
         </a>
 
         <?php foreach ($kategori as $kat): ?>
-            <a href="menu.php?kategori=<?= $kat['id_kategori'] ?>"
+            <a href="Menu.php?kategori=<?= $kat['id_kategori'] ?>"
                class="btn btn-kategori <?= ($id_kategori == $kat['id_kategori']) ? 'active' : '' ?>">
                 <?= $kat['nama_kategori'] ?>
             </a>
         <?php endforeach; ?>
     </div>
+
 
     <!-- Grid Menu -->
     <div class="menu-grid">
@@ -100,4 +102,4 @@ $menuData = $id_kategori
 
 </div>
 
-<?php include '../views/layout/footer.php'; ?>
+<?php include_once __DIR__ . '/layout/footer.php'; ?>
