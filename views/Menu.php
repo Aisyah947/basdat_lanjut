@@ -1,95 +1,76 @@
 <?php
-include_once 'models/RestoranModel.php';
-include_once 'config/database.php';
+include_once '../models/RestoranModel.php';
+include_once '../config/database.php';
 
 $db = new Database();
 $conn = $db->getConnection();
 $model = new RestoranModel($conn);
 
-// Ambil kategori
+// Ambil semua kategori
 $kategori = $model->getAllKategori();
 
-// Filter kategori
+// Cek apakah ada filter kategori dari query string
 $id_kategori = $_GET['kategori'] ?? null;
-$menuData = $id_kategori ? $model->getMenuByKategori($id_kategori) : $model->getAllMenu();
 
-$action = $_GET['action'] ?? 'dashboard';
+$menuData = $id_kategori ? $model->getMenuByKategori($id_kategori) : $model->getAllMenu();
+ 
 ?>
 
-<!-- Header -->
-<div class="header">
-    <div class="search-bar">
-        <i class="fas fa-search" style="color: #999;"></i>
-        <input type="text" placeholder="Search for...">
-    </div>
+<?php include '../views/layout/header.php'; ?>
+<?php include '../views/layout/sidebar.php'; ?>
 
-    <div class="header-right">
-        <button class="icon-btn">
-            <i class="far fa-bell"></i>
-            <span class="badge">3+</span>
-        </button>
-        <button class="icon-btn">
-            <i class="far fa-envelope"></i>
-            <span class="badge">7</span>
-        </button>
-
-        <div class="user-profile">
-            <span style="color: #666;">Admin</span>
-            <div class="user-avatar">AD</div>
-        </div>
-    </div>
-</div>
-
-<!-- CONTENT AREA -->
 <div class="content">
 
-    <div class="page-header">
-        <h1 class="page-title">Daftar Menu Restoran</h1>
+    <h2 class="page-title">Daftar Menu Restoran</h2>
 
-        <a href="index.php?action=Menu&add=true" class="btn-primary">
-            Tambah Menu
-        </a>
+    <!-- Tombol laporan & tambah -->
+    <div class="action-buttons top-buttons">
+        <a href="laporan_menu.php" class="btn btn-laporan"><i class="fa fa-file"></i> Laporan Menu</a>
+        <a href="tambah_menu.php" class="btn btn-tambah"><i class="fa fa-plus"></i> Tambah Menu</a>
     </div>
 
-
     <!-- Filter Kategori -->
-    <div style="margin-bottom:20px;">
-        <a href="index.php?action=Menu" class="btn-kategori">Semua Kategori</a>
+    <div class="kategori-filter">
+        <a href="menu.php" class="btn btn-kategori <?= $id_kategori ? '' : 'active' ?>">Semua</a>
 
         <?php foreach($kategori as $kat): ?>
-            <a href="index.php?action=Menu&kategori=<?= $kat['id_kategori'] ?>" class="btn-kategori">
+            <a href="menu.php?kategori=<?= $kat['id_kategori'] ?>" 
+               class="btn btn-kategori <?= ($id_kategori == $kat['id_kategori']) ? 'active' : '' ?>">
                 <?= $kat['nama_kategori'] ?>
             </a>
         <?php endforeach; ?>
     </div>
 
-
-    <!-- MENU LIST -->
-    <div class="grid">
+    <!-- Grid Menu -->
+    <div class="menu-grid">
         <?php foreach ($menuData as $menu): ?>
-        <div class="card">
+        <div class="menu-card">
 
             <?php if(!empty($menu['foto_menu'])): ?>
-                <img src="uploads/<?= $menu['foto_menu'] ?>" alt="<?= $menu['nama_menu'] ?>">
+                <img src="../uploads/<?= $menu['foto_menu'] ?>" class="menu-img">
             <?php else: ?>
                 <div class="no-photo">Tidak ada foto</div>
             <?php endif; ?>
 
-            <div class="card-content">
+            <div class="menu-info">
                 <h3><?= $menu['nama_menu'] ?></h3>
-                <p>Kategori: <?= $menu['nama_kategori'] ?></p>
-                <p class="<?= $menu['status_ketersediaan'] ? 'status-tersedia' : 'status-tidak' ?>">
+
+                <span class="badge kategori"><?= $menu['nama_kategori'] ?></span>
+
+                <span class="badge <?= $menu['status_ketersediaan'] ? 'tersedia' : 'tidak' ?>">
                     <?= $menu['status_ketersediaan'] ? 'Tersedia' : 'Tidak Tersedia' ?>
-                </p>
-                <p>Harga: Rp <?= number_format($menu['harga'],0,',','.') ?></p>
-                <p><?= $menu['deskripsi'] ?></p>
+                </span>
+
+                <p class="harga">Rp <?= number_format($menu['harga'],0,',','.') ?></p>
+                <p class="deskripsi"><?= $menu['deskripsi'] ?></p>
             </div>
 
             <div class="card-actions">
-                <a href="index.php?action=Menu&edit=<?= $menu['id_menu'] ?>" class="edit-btn">Edit</a>
-                <a href="hapus_menu.php?id=<?= $menu['id_menu'] ?>"
-                   onclick="return confirm('Hapus menu ini?');"
-                   class="delete-btn">Hapus</a>
+                <a href="edit_menu.php?id=<?= $menu['id_menu'] ?>" class="edit-btn">Edit</a>
+                <a href="hapus_menu.php?id=<?= $menu['id_menu'] ?>" class="delete-btn"
+                   onclick="return confirm('Yakin ingin menghapus menu ini?');">
+                   Hapus
+                </a>
             </div>
 
         </div>
@@ -97,3 +78,5 @@ $action = $_GET['action'] ?? 'dashboard';
     </div>
 
 </div>
+
+<?php include '../views/layout/footer.php'; ?>
