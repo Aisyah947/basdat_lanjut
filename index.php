@@ -8,7 +8,7 @@ include "views/layout/topbar.php"; // kalau ada
 echo '<div class="main-content"><div class="content">';
 
 if ($action == 'dashboard') {
-    include "views/dashboard.php";
+    include "views/layout/dashboard.php";
 }
 
 echo '</div></div>';
