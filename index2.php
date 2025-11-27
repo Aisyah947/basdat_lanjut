@@ -18,11 +18,15 @@ switch ($action) {
         include 'views/Reservasi.php';
         break;
 
+    case 'Pelanggan':
+        include 'views/Pelanggan.php';
+        break;
+
     case 'Laporan':
         include 'views/Laporan.php';
         break;
 
     default:
-        include 'views/dashboard.php';
+        include 'views/layout/dashboard.php';
 }
 ?>
