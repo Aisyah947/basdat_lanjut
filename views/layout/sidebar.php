@@ -36,6 +36,12 @@
         </a>
     </div>
 
+    <div class="menu-item <?= $action == 'Pelanggan' ? 'active' : '' ?>">
+        <a href="index.php?action=Pelanggan">
+            <i class="fas fa-users"></i> <span>Pelanggan</span>
+        </a>
+    </div>
+
     <div class="menu-section">Laporan</div>
 
     <div class="menu-item <?= $action == 'Laporan' ? 'active' : '' ?>">

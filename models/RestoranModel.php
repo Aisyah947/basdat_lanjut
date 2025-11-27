@@ -127,19 +127,34 @@ public function getMenuById($id){
     }
 
     // CREATE
-        public function tambahPesanan($id_pelanggan, $id_meja, $id_server, $status) {
-        $stmt = $this->conn->prepare ("INSERT INTO pesanan 
-                    (id_pelanggan, id_meja, id_server, status_orderan)
-                VALUES (:p, :m, :s, :status)");
+    public function tambahPesanan($id_pelanggan, $id_meja, $id_server, $tanggal_pesanan, $total_harga, $status_orderan) 
+    {
+    try {
 
-        $stmt = $this->conn->prepare($stmt);
-        return $stmt->execute([
-            ':p' => $id_pelanggan,
-            ':m' => $id_meja,
-            ':s' => $id_server,
-            ':status' => $status
-        ]);
+            $sql = "INSERT INTO pesanan 
+                    (id_pelanggan, id_meja, id_server, tanggal_pesanan, total_harga, status_orderan)
+                    VALUES (:p, :m, :s, :t, :total, :st)";
+
+            $stmt = $this->conn->prepare($sql);
+
+            return $stmt->execute([
+                ':p'     => $id_pelanggan,
+                ':m'     => $id_meja,
+                ':s'     => $id_server,
+                ':t'     => $tanggal_pesanan,   // format: Y-m-d
+                ':total' => $total_harga,       // numeric OK
+                ':st'    => $status_orderan     // varchar OK
+            ]);
+
+        } catch (PDOException $e) {
+
+            echo "<b>PostgreSQL Error:</b><br>";
+            echo $e->getMessage();
+            return false;
+        }
     }
+
+
 
     // READ (sudah ada getAllPesanan)
         public function getPesananById($id) {
@@ -186,6 +201,53 @@ public function getMenuById($id){
         $stmt3 = "DELETE FROM pesanan WHERE id_pesanan = :id";
         $stmt3 = $this->conn->prepare($stmt3);
         return $stmt3->execute([':id' => $id]);
+    }
+
+        public function getAllPelanggan()
+    {
+        $sql = "SELECT * FROM pelanggan ORDER BY id_pelanggan ASC";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+        public function getPelangganById($id)
+    {
+        $sql = "SELECT * FROM pelanggan WHERE id_pelanggan = :id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([':id' => $id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+
+        public function tambahPelanggan($nama, $no_telp)
+    {
+        try {
+            $sql = "INSERT INTO pelanggan (nama, no_telepon)
+                    VALUES (:nama, :no_telp)";
+            $stmt = $this->conn->prepare($sql);
+
+            return $stmt->execute([
+                ':nama' => $nama,
+                ':no_telp' => $no_telp
+            ]);
+
+        } catch (PDOException $e) {
+            echo "<b>PostgreSQL Error:</b><br>" . $e->getMessage();
+            return false;
+        }
+    }
+
+        public function hapusPelanggan($id)
+    {
+        try {
+            $sql = "DELETE FROM pelanggan WHERE id_pelanggan = :id";
+            $stmt = $this->conn->prepare($sql);
+            return $stmt->execute([':id' => $id]);
+        } catch (PDOException $e) {
+            echo "<b>PostgreSQL Error:</b><br>" . $e->getMessage();
+            return false;
+        }
     }
 
     // --- FUNCTION & STORED PROCEDURE ---
