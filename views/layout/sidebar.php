@@ -5,7 +5,7 @@
     </div>
 
     <div class="menu-item <?= $action == 'dashboard' ? 'active' : '' ?>">
-        <a href="index.php?action=dashboard">
+        <a href="/basdat_lanjut/index.php?action=dashboard">
             <i class="fas fa-home"></i> <span>Dashboard</span>
         </a>
     </div>
@@ -13,25 +13,25 @@
     <div class="menu-section">Data Master</div>
 
     <div class="menu-item <?= $action == 'Menu' ? 'active' : '' ?>">
-        <a href="index.php?action=Menu">
+        <a href="/basdat_lanjut/views/Menu.php">
             <i class="fas fa-pizza-slice"></i> <span>Menu</span>
         </a>
     </div>
 
     <div class="menu-item <?= $action == 'Pesanan' ? 'active' : '' ?>">
-        <a href="index.php?action=Pesanan">
+        <a href="/basdat_lanjut/index2.php?action=Pesanan">
             <i class="fas fa-shopping-cart"></i> <span>Pesanan</span>
         </a>
     </div>
 
     <div class="menu-item <?= $action == 'Meja' ? 'active' : '' ?>">
-        <a href="index.php?action=Meja">
+        <a href="/basdat_lanjut/index2.php?action=Meja">
             <i class="fas fa-chair"></i> <span>Meja</span>
         </a>
     </div>
 
     <div class="menu-item <?= $action == 'Reservasi' ? 'active' : '' ?>">
-        <a href="index.php?action=Reservasi">
+        <a href="/basdat_lanjut/index2.php?action=Reservasi">
             <i class="fas fa-calendar-check"></i> <span>Reservasi</span>
         </a>
     </div>
@@ -45,7 +45,7 @@
     <div class="menu-section">Laporan</div>
 
     <div class="menu-item <?= $action == 'Laporan' ? 'active' : '' ?>">
-        <a href="index.php?action=Laporan">
+        <a href="/basdat_lanjut/index2.php?action=Laporan">
             <i class="fas fa-file-alt"></i> <span>Laporan</span>
         </a>
     </div>
