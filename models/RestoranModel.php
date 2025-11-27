@@ -317,7 +317,74 @@ public function getMenuById($id){
         $stmt->bindParam(':id', $id_pesanan);
         return $stmt->execute();
     }
+
+      // --- RESERVASI ---
+
+      public function getAllReservasi(){
+        $stmt = $this->conn->prepare("
+            SELECT r.*, p.nama AS nama_pelanggan, m.nomor_meja
+            FROM reservasi r
+            JOIN pelanggan p ON r.id_pelanggan = p.id_pelanggan
+            JOIN meja m ON r.id_meja = m.id_meja
+            ORDER BY r.id_reservasi ASC
+        ");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getReservasiById($id){
+        $stmt = $this->conn->prepare("SELECT * FROM reservasi WHERE id_reservasi = :id");
+        $stmt->execute([':id' => $id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    
+    public function tambahReservasi($id_pelanggan, $id_meja, $tanggal, $jam, $jumlah_orang, $status){
+        $stmt = $this->conn->prepare("
+            INSERT INTO reservasi (id_pelanggan, id_meja, tanggal_reservasi, jam_reservasi, jumlah_orang, status_reservasi)
+            VALUES (:p, :m, :tgl, :jam, :jml, :st)
+        ");
+    
+        return $stmt->execute([
+            ':p'   => $id_pelanggan,
+            ':m'   => $id_meja,
+            ':tgl' => $tanggal,
+            ':jam' => $jam,
+            ':jml' => $jumlah_orang,
+            ':st'  => $status
+        ]);
+    }
+    
+    public function updateReservasi($id, $id_pelanggan, $id_meja, $tanggal, $jam, $jumlah_orang, $status){
+        $stmt = $this->conn->prepare("
+            UPDATE reservasi
+            SET id_pelanggan = :p,
+                id_meja = :m,
+                tanggal_reservasi = :tgl,
+                jam_reservasi = :jam,
+                jumlah_orang = :jml,
+                status_reservasi = :st
+            WHERE id_reservasi = :id
+        ");
+    
+        return $stmt->execute([
+            ':id'  => $id,
+            ':p'   => $id_pelanggan,
+            ':m'   => $id_meja,
+            ':tgl' => $tanggal,
+            ':jam' => $jam,
+            ':jml' => $jumlah_orang,
+            ':st'  => $status
+        ]);
+    }
+    
+    public function hapusReservasi($id){
+        $stmt = $this->conn->prepare("DELETE FROM reservasi WHERE id_reservasi = :id");
+        return $stmt->execute([':id' => $id]);
+    }
+    
 }
 
+  
+    
 
 ?>
