@@ -9,7 +9,7 @@ $model = new RestoranModel($conn);
 // Ambil data untuk dropdown
 $pelanggan = $model->getAllPelanggan();
 $meja      = $model->getAllMeja();
-$server    = $model->getAllKaryawan();
+$server    = $model->getAllServer();
 $menu      = $model->getAllMenu();
 
 // Proses tambah pesanan

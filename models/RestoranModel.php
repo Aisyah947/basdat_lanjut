@@ -93,14 +93,6 @@ public function getMenuById($id){
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
 
-
-    // --- MEJA ---
-    public function getAllMeja(){
-        $stmt = $this->conn->prepare("SELECT * FROM meja ORDER BY id_meja ASC");
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
     // --- PESANAN ---
      public function getAllPesanan(){
         $stmt = $this->conn->prepare("
@@ -248,6 +240,61 @@ public function getMenuById($id){
             echo "<b>PostgreSQL Error:</b><br>" . $e->getMessage();
             return false;
         }
+    }
+
+     public function getAllMeja()
+    {
+        $query = "SELECT * FROM meja ORDER BY id_meja ASC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getMejaById($id)
+    {
+        $query = "SELECT * FROM meja WHERE id_meja = :id";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(":id", $id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function tambahMeja($nomor_meja, $status_meja, $kapasitas)
+    {
+        $query = "INSERT INTO meja (nomor_meja, status_meja, kapasitas) 
+                  VALUES (:nomor_meja, :status_meja, :kapasitas)";
+        $stmt = $this->conn->prepare($query);
+
+        $stmt->bindParam(":nomor_meja", $nomor_meja);
+        $stmt->bindParam(":status_meja", $status_meja);
+        $stmt->bindParam(":kapasitas", $kapasitas);
+
+        return $stmt->execute();
+    }
+
+    public function updateMeja($id, $nomor_meja, $status_meja, $kapasitas)
+    {
+        $query = "UPDATE meja 
+                  SET nomor_meja = :nomor_meja,
+                      status_meja = :status_meja,
+                      kapasitas = :kapasitas
+                  WHERE id_meja = :id";
+
+        $stmt = $this->db->prepare($query);
+
+        $stmt->bindParam(":id", $id);
+        $stmt->bindParam(":nomor_meja", $nomor_meja);
+        $stmt->bindParam(":status_meja", $status_meja);
+        $stmt->bindParam(":kapasitas", $kapasitas);
+
+        return $stmt->execute();
+    }
+    public function hapusMeja($id)
+    {
+        $query = "DELETE FROM meja WHERE id_meja = :id";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(":id", $id);
+        return $stmt->execute();
     }
 
     // --- FUNCTION & STORED PROCEDURE ---
