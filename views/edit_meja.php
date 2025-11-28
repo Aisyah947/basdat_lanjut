@@ -1,84 +1,62 @@
 <?php
-include_once __DIR__ . '/../models/RestoranModel.php';
 include_once __DIR__ . '/../config/database.php';
+include_once __DIR__ . '/../models/RestoranModel.php';
 
 $db = new Database();
 $conn = $db->getConnection();
 $model = new RestoranModel($conn);
 
-$id = $_GET['id'] ?? null;
-if (!$id) { header("Location: reservasi.php"); exit; }
+// Cek ID
+if (!isset($_GET['id']) || empty($_GET['id'])) {
+    die("ID Meja tidak ditemukan.");
+}
 
-$reservasi = $model->getReservasiById($id);
-$pelanggan = $model->getAllPelanggan();
-$meja = $model->getAllMeja();
+$id = $_GET['id'];
+
+// Ambil data meja
+$data = $model->getMejaById($id);
+
+if (!$data) {
+    die("Data meja tidak ditemukan.");
+}
+
+// Proses update
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    $nomor  = $_POST['nomor_meja'];
+    $status = $_POST['status_meja'];
+    $kapas  = $_POST['kapasitas'];
+
+    if ($model->updateMeja($id, $nomor, $status, $kapas)) {
+        header("Location: Meja.php?success=edit");
+
+        exit;
+    }
+}
 ?>
 
-<?php include_once __DIR__ . '/layout/header.php'; ?>
+<?php include 'layout/header.php'; ?>
 
-<h2>Edit Reservasi</h2>
+<h2>Edit Meja</h2>
 
-<form action="proses_edit_reservasi.php" method="POST">
+<form method="POST">
 
-    <input type="hidden" name="id_reservasi" value="<?= $reservasi['id_reservasi'] ?>">
+    <label>Nomor Meja:</label>
+    <input type="number" name="nomor_meja" value="<?= $data['nomor_meja'] ?>" required>
 
-    <div class="form-group">
-        <label>Pelanggan *</label>
-        <select name="id_pelanggan" required>
-            <option value="">-- Pilih Pelanggan --</option>
-            <?php foreach ($pelanggan as $p): ?>
-                <option value="<?= $p['id_pelanggan'] ?>"
-                    <?= $reservasi['id_pelanggan'] == $p['id_pelanggan'] ? 'selected' : '' ?>>
-                    <?= $p['nama'] ?> (<?= $p['no_telepon'] ?>)
-                </option>
-            <?php endforeach; ?>
-        </select>
-    </div>
+    <label>Status Meja:</label>
+    <select name="status_meja">
+        <option value="Kosong" <?= $data['status_meja']=='Kosong'?'selected':'' ?>>Kosong</option>
+        <option value="Terisi" <?= $data['status_meja']=='Terisi'?'selected':'' ?>>Terisi</option>
+        <option value="Booking" <?= $data['status_meja']=='Booking'?'selected':'' ?>>Booking</option>
+    </select>
 
-    <div class="form-group">
-        <label>Meja *</label>
-        <select name="id_meja" required>
-            <option value="">-- Pilih Meja --</option>
-            <?php foreach ($meja as $m): ?>
-                <option value="<?= $m['id_meja'] ?>"
-                    <?= $reservasi['id_meja'] == $m['id_meja'] ? 'selected' : '' ?>>
-                    Meja <?= $m['nomor_meja'] ?> (Kapasitas: <?= $m['kapasitas'] ?>)
-                </option>
-            <?php endforeach; ?>
-        </select>
-    </div>
+    <label>Kapasitas:</label>
+    <input type="number" name="kapasitas" value="<?= $data['kapasitas'] ?>" required>
 
-    <div class="form-group">
-        <label>Tanggal Reservasi *</label>
-        <input type="date" name="tanggal_reservasi"
-               value="<?= $reservasi['tanggal_reservasi'] ?>" required>
-    </div>
-
-    <div class="form-group">
-        <label>Jam Reservasi *</label>
-        <input type="time" name="jam_reservasi"
-               value="<?= $reservasi['jam_reservasi'] ?>" required>
-    </div>
-
-    <div class="form-group">
-        <label>Jumlah Orang *</label>
-        <input type="number" name="jumlah_orang" min="1"
-               value="<?= $reservasi['jumlah_orang'] ?>" required>
-    </div>
-
-    <div class="form-group">
-        <label>Status Reservasi *</label>
-        <select name="status_reservasi" required>
-            <option value="Menunggu"     <?= $reservasi['status_reservasi']=='Menunggu' ? 'selected':'' ?>>Menunggu</option>
-            <option value="Dikonfirmasi" <?= $reservasi['status_reservasi']=='Dikonfirmasi' ? 'selected':'' ?>>Dikonfirmasi</option>
-            <option value="Selesai"      <?= $reservasi['status_reservasi']=='Selesai' ? 'selected':'' ?>>Selesai</option>
-            <option value="Batal"        <?= $reservasi['status_reservasi']=='Batal' ? 'selected':'' ?>>Batal</option>
-        </select>
-    </div>
-
-    <button type="submit">Simpan</button>
-    <a href="reservasi.php" class="back-link">Kembali</a>
+    <button type="submit">Update</button>
+    <a href="../Meja.php">Kembali</a>
 
 </form>
 
-<?php include_once __DIR__ . '/layout/footer.php'; ?>
+<?php include 'layout/footer.php'; ?>

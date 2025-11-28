@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_POST['shift']
     );
 
-    header("Location: LaporanShift.php?success=tambah");
+    header("Location: LaporanSift.php?success=tambah");
     exit;
 }
 ?>
