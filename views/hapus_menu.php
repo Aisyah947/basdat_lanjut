@@ -1,5 +1,5 @@
 <?php
-include '../config/koneksi.php';
+include '../config/database.php';
 include '../models/RestoranModel.php';
 
 $db = new Database();

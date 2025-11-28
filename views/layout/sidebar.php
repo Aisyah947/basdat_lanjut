@@ -58,7 +58,7 @@
 
     <div class="menu-item <?= $action == 'LaporanSift' ? 'active' : '' ?>">
         <a href="/basdat_lanjut/index2.php?action=LaporanSift">
-            <i class="fas fa-file-alt"></i> <span>Laporan Sift</span>
+            <i class="fas fa-file-alt"></i> <span>Laporan Shift</span>
         </a>
     </div>
 </div>
