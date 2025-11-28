@@ -176,6 +176,16 @@ public function getMenuById($id){
         ]);
     }
 
+        public function hapusDetailPesanan($id_detail)
+    {
+        $query = "DELETE FROM detail_pesanan WHERE id_detail_pesanan = :id";
+        $stmt = $this->conn->prepare($query);
+
+        $stmt->bindParam(':id', $id_detail, PDO::PARAM_INT);
+
+        return $stmt->execute();
+    }
+
     // DELETE
     public function hapusPesanan($id) {
 
