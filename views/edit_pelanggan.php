@@ -47,8 +47,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <label>No Telepon:</label>
     <input type="text" name="no_telepon" value="<?= $data['no_telepon'] ?>" required>
 
+
     <button type="submit">Update</button>
-    <a href="Pelanggan.php">Batal</a>
+
+    <a href="Pelanggan.php" class="back-link">Batal</a>
 </form>
 
 <?php include 'layout/footer.php'; ?>

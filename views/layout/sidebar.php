@@ -37,7 +37,7 @@
     </div>
 
     <div class="menu-item <?= $action == 'Pelanggan' ? 'active' : '' ?>">
-        <a href="index.php?action=Pelanggan">
+        <a href="/basdat_lanjut/index2.php?action=Pelanggan">
             <i class="fas fa-users"></i> <span>Pelanggan</span>
         </a>
     </div>

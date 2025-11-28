@@ -20,11 +20,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<?php include 'layout/header.php'; ?>
+<?php include_once __DIR__ . '/layout/header.php'; ?>
 
-<h2>Tambah Meja</h2>
+<h2 class="page-title">Tambah Menu</h2>
 
-<?php if (isset($error)) echo "<p style='color:red'>$error</p>"; ?>
+<?php if (isset($error)) echo "<p class='error-msg'>$error</p>"; ?>
 
 <form method="POST">
 
@@ -42,8 +42,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <input type="number" name="kapasitas" required>
 
     <button type="submit">Tambah</button>
-    <a href="Meja.php">Kembali</a>
 
+    <a href="Meja.php" class="back-link">Kembali</a>
 </form>
+
 
 <?php include 'layout/footer.php'; ?>

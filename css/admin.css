@@ -236,8 +236,9 @@ tr:hover {
     border-radius: 5px;
     cursor: pointer;
     font-weight: 500;
-    transition: all 0.3s;
+    transition: all 0.3s;;
 }
+
 
 .btn-edit:hover {
     background: #27ae60;
@@ -528,3 +529,244 @@ body {
     border-radius: 10px;
     box-shadow: 0px 2px 6px rgba(0,0,0,0.15);
 }
+/* Tambah Menu */
+.modal-box {
+    width: 600px;
+    margin: 60px auto;
+    background: #fff;
+    padding: 25px;
+    border-radius: 6px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.25);
+}
+
+.modal-box h2 {
+    margin-bottom: 20px;
+    font-size: 20px;
+}
+
+.modal-box input,
+.modal-box select,
+.modal-box textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.modal-actions {
+    text-align: right;
+    margin-top: 10px;
+}
+
+.btn-reset {
+    background: #e74c3c;
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 4px;
+}
+
+.btn-save {
+    background: #2ecc71;
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 4px;
+}
+
+/* Pelanggan */
+/* Bungkus halaman */
+.wrapper {
+    margin-left: 260px; /* menyesuaikan sidebar layout kamu */
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+/* Judul */
+h2 {
+    margin-bottom: 15px;
+}
+
+/* Tombol tambah */
+.btn-add {
+    display: inline-block;
+    background: #27ae60;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+/* Kotak tabel */
+.table-container {
+    background: rgb(53, 60, 175);
+    padding: 0;
+    border-radius: 12px;
+    box-shadow: 0px 2px 8px rgba(0,0,0,0.15);
+    width: 90%;
+}
+
+/* Tabel */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+}
+
+
+.table th {
+    background: #1682e8;
+    color: white;
+    padding: 12px;
+    text-align: left;
+}
+
+.table td {
+    padding: 12px;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Hover baris */
+.table tr:hover {
+    background: #f7f7f7;
+}
+.page-container {
+    max-width: 450px;
+    margin: 30px auto;
+    padding: 20px;
+}
+
+form {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+form label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+    color: #444;
+}
+
+form input, form select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+button {
+    width: 100%;
+    background: #007bff;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #0056b3;
+}
+
+.back-link {
+    display: block;
+    margin-top: 10px;
+    text-align: center;
+    color: #555;
+    text-decoration: none;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.error-msg {
+    color: red;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+/* Tambah Menu */
+h2 {
+    margin-bottom: 20px;
+    font-size: 22px;
+    color: #333;
+    text-align: left; 
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #bbb;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+textarea {
+    height: 80px;
+}
+
+small {
+    display: block;
+    margin-top: 4px;
+    color: #666;
+    font-size: 12px;
+}
+
+.btn-primary {
+    background: #0066ff;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btn-secondary {
+    background: #777;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.btn-primary:hover {
+    background: #0050d1;
+}
+
+.btn-secondary:hover {
+    background: #5e5e5e;
+}
+

@@ -9,7 +9,7 @@ $model = new RestoranModel($conn);
 // Ambil data untuk dropdown
 $pelanggan = $model->getAllPelanggan();
 $meja      = $model->getAllMeja();
-$server    = $model->getAllKaryawan();
+$server    = $model->getAllServer();
 $menu      = $model->getAllMenu();
 
 // Proses tambah pesanan
@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($id_pesanan) {
         foreach ($_POST['menu'] as $menuId => $jumlah) {
             if ($jumlah > 0) {
-                $model->tambahDetailPesanan($id_pesanan, $menuId, $jumlah);
+                $model->getDetailPesanan($id_pesanan, $menuId, $jumlah);
             }
         }
 

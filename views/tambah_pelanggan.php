@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <input type="text" name="no_telepon" required>
 
     <button type="submit">Simpan</button>
-    <a href="Pelanggan.php">Kembali</a>
+    <a href="Pelanggan.php" class="back-link">Kembali</a>
 </form>
 
 <?php include 'layout/footer.php'; ?>
