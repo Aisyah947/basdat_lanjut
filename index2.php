@@ -22,8 +22,16 @@ switch ($action) {
         include 'views/Pelanggan.php';
         break;
 
+    case 'Server':
+        include 'views/Server.php';
+        break;
+
     case 'Laporan':
         include 'views/Laporan.php';
+        break;
+
+    case 'LaporanSift':
+        include 'views/LaporanSift.php';
         break;
 
     default:

@@ -42,11 +42,23 @@
         </a>
     </div>
 
+    <div class="menu-item <?= $action == 'Server' ? 'active' : '' ?>">
+        <a href="/basdat_lanjut/index2.php?action=Server">
+            <i class="fas fa-users"></i> <span>Server</span>
+        </a>
+    </div>
+
     <div class="menu-section">Laporan</div>
 
     <div class="menu-item <?= $action == 'Laporan' ? 'active' : '' ?>">
         <a href="/basdat_lanjut/index2.php?action=Laporan">
             <i class="fas fa-file-alt"></i> <span>Laporan</span>
+        </a>
+    </div>
+
+    <div class="menu-item <?= $action == 'LaporanSift' ? 'active' : '' ?>">
+        <a href="/basdat_lanjut/index2.php?action=LaporanSift">
+            <i class="fas fa-file-alt"></i> <span>Laporan Sift</span>
         </a>
     </div>
 </div>

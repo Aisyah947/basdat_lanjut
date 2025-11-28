@@ -382,6 +382,118 @@ public function getMenuById($id){
         return $stmt->execute([':id' => $id]);
     }
     
+      // --- SERVER ---
+
+    public function getAllServer() {
+        $stmt = $this->conn->prepare("SELECT * FROM server ORDER BY id_server ASC");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    public function getServerById($id) {
+        $stmt = $this->conn->prepare("SELECT * FROM server WHERE id_server = :id");
+        $stmt->execute(['id' => $id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    
+    public function tambahServer($nama, $telp, $shift) {
+        $sql = "INSERT INTO server (nama_server, no_telepon, shift)
+                VALUES (:nama, :telp, :shift)";
+        $stmt = $this->conn->prepare($sql);
+        return $stmt->execute([
+            'nama' => $nama,
+            'telp' => $telp,
+            'shift' => $shift
+        ]);
+    }
+    
+    public function updateServer($id, $nama, $telp, $shift) {
+        $sql = "UPDATE server SET nama_server = :nama, no_telepon = :telp, shift = :shift
+                WHERE id_server = :id";
+        $stmt = $this->conn->prepare($sql);
+        return $stmt->execute([
+            'nama' => $nama,
+            'telp' => $telp,
+            'shift' => $shift,
+            'id' => $id
+        ]);
+    }
+    
+    public function hapusServer($id) {
+        $stmt = $this->conn->prepare("DELETE FROM server WHERE id_server = :id");
+        return $stmt->execute(['id' => $id]);
+    }
+
+
+// LAPORAN SIFT
+public function getAllLaporanShift() {
+    $stmt = $this->conn->prepare("
+        SELECT l.*, s.nama_server 
+        FROM laporan_shift l
+        JOIN server s ON l.id_server = s.id_server
+        ORDER BY l.tanggal DESC
+    ");
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+// Tambah laporan shift
+public function tambahLaporanShift($id_server, $tanggal, $mulai, $selesai, $total_penjualan, $total_pesanan, $shift) {
+    $stmt = $this->conn->prepare("
+        INSERT INTO laporan_shift 
+        (id_server, tanggal, waktu_mulai, waktu_selesai, total_penjualan, total_pesanan, shift)
+        VALUES (:server, :tgl, :mulai, :selesai, :jual, :pesan, :sh)
+    ");
+    return $stmt->execute([
+        ':server' => $id_server,
+        ':tgl'    => $tanggal,
+        ':mulai'  => $mulai,
+        ':selesai'=> $selesai,
+        ':jual'   => $total_penjualan,
+        ':pesan'  => $total_pesanan,
+        ':sh'     => $shift
+    ]);
+}
+
+// Ambil laporan shift berdasarkan ID
+public function getLaporanShiftById($id_laporan) {
+    $stmt = $this->conn->prepare("SELECT * FROM laporan_shift WHERE id_laporan = :id");
+    $stmt->execute([':id' => $id_laporan]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+// Edit laporan shift
+public function editLaporanShift($id_laporan, $id_server, $tanggal, $mulai, $selesai, $total_penjualan, $total_pesanan, $shift) {
+    $stmt = $this->conn->prepare("
+        UPDATE laporan_shift SET
+            id_server = :server,
+            tanggal = :tgl,
+            waktu_mulai = :mulai,
+            waktu_selesai = :selesai,
+            total_penjualan = :jual,
+            total_pesanan = :pesan,
+            shift = :sh
+        WHERE id_laporan = :id
+    ");
+    return $stmt->execute([
+        ':id'     => $id_laporan,
+        ':server' => $id_server,
+        ':tgl'    => $tanggal,
+        ':mulai'  => $mulai,
+        ':selesai'=> $selesai,
+        ':jual'   => $total_penjualan,
+        ':pesan'  => $total_pesanan,
+        ':sh'     => $shift
+    ]);
+}
+
+// Hapus laporan shift
+public function hapusLaporanShift($id_laporan) {
+    $stmt = $this->conn->prepare("DELETE FROM laporan_shift WHERE id_laporan = :id");
+    return $stmt->execute([':id' => $id_laporan]);
+}
+
+    
 }
 
   
