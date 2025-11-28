@@ -37,7 +37,7 @@ $allPesanan = $model->getAllPesanan();
                 echo implode(", ", $namaMenu);
                 ?>
             </td>
-            <td>Rp <?= number_format($model->hitungTotalPesanan($pesanan['id_pesanan']),0,',','.') ?></td>
+            <td>Rp <?= number_format($model->hitungTotalPesanan($pesanan['id_pesanan']) ?? 0, 0, ',', '.') ?></td>
             <td><?= $model->cekStatusPembayaran($pesanan['id_pesanan']) ?></td>
             <td><?= $pesanan['status_orderan'] ?></td>
             <td>
