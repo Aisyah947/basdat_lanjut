@@ -6,7 +6,10 @@ class RestoranModel {
         $this->conn = $db;
     }
 
-    // ==== MENU ====
+    // =========================
+    //        MENU
+    // =========================
+
     public function getAllMenu(){
         $stmt = $this->conn->prepare("
             SELECT m.*, km.nama_kategori 
@@ -20,27 +23,26 @@ class RestoranModel {
 
     public function getMenuStatistics(){
         $stats = ['total_menu'=>0, 'makanan'=>0, 'minuman'=>0, 'dessert'=>0, 'snack'=>0];
+
+        // Total menu
         $stmtTotal = $this->conn->prepare("SELECT COUNT(*) FROM menu");
         $stmtTotal->execute();
         $stats['total_menu'] = $stmtTotal->fetchColumn();
 
+        // Statistik kategori
         $stmtCat = $this->conn->prepare("
             SELECT 
                 SUM(CASE WHEN km.nama_kategori='Makanan' THEN 1 ELSE 0 END) AS makanan,
                 SUM(CASE WHEN km.nama_kategori='Minuman' THEN 1 ELSE 0 END) AS minuman,
                 SUM(CASE WHEN km.nama_kategori='Dessert' THEN 1 ELSE 0 END) AS dessert,
-            SUM(CASE WHEN km.nama_kategori='Snack' THEN 1 ELSE 0 END) AS snack
+                SUM(CASE WHEN km.nama_kategori='Snack' THEN 1 ELSE 0 END) AS snack
             FROM menu m
             JOIN kategori_menu km ON m.id_kategori = km.id_kategori
         ");
         $stmtCat->execute();
         $res = $stmtCat->fetch(PDO::FETCH_ASSOC);
-        $stats['makanan'] = $res['makanan'] ?? 0;
-        $stats['minuman'] = $res['minuman'] ?? 0;
-        $stats['dessert'] = $res['dessert'] ?? 0;
-        $stats['snack'] = $res['snack'] ?? 0;
 
-        return $stats;
+        return array_merge($stats, $res ?: []);
     }
 
     public function insertMenu($nama, $id_kategori, $harga, $deskripsi, $status, $foto)
@@ -59,7 +61,6 @@ class RestoranModel {
             ':foto'      => $foto
         ]);
     }
-    
 
     public function getMenuById($id){
         $stmt = $this->conn->prepare("
@@ -72,28 +73,29 @@ class RestoranModel {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-        // Kategori menu
-        public function getAllKategori(){
-            $stmt = $this->conn->prepare("SELECT * FROM kategori_menu ORDER BY nama_kategori ASC");
-            $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        }
-    
-        // Ambil menu berdasarkan kategori
-        public function getMenuByKategori($id_kategori){
-            $stmt = $this->conn->prepare("
-                SELECT m.*, km.nama_kategori 
-                FROM menu m
-                JOIN kategori_menu km ON m.id_kategori = km.id_kategori
-                WHERE m.id_kategori = :id_kategori
-                ORDER BY m.nama_menu ASC
-            ");
-            $stmt->bindParam(':id_kategori', $id_kategori);
-            $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        }
+    public function getAllKategori(){
+        $stmt = $this->conn->prepare("SELECT * FROM kategori_menu ORDER BY nama_kategori ASC");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
-    // ==== PESANAN ====
+    public function getMenuByKategori($id_kategori){
+        $stmt = $this->conn->prepare("
+            SELECT m.*, km.nama_kategori 
+            FROM menu m
+            JOIN kategori_menu km ON m.id_kategori = km.id_kategori
+            WHERE m.id_kategori = :id_kategori
+            ORDER BY m.nama_menu ASC
+        ");
+        $stmt->execute([':id_kategori' => $id_kategori]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
+    // =========================
+    //        PESANAN
+    // =========================
+
     public function getAllPesanan(){
         $stmt = $this->conn->prepare("
             SELECT p.*, m.nomor_meja, pel.nama AS nama_pelanggan
@@ -107,21 +109,18 @@ class RestoranModel {
     }
 
     public function getDetailPesanan($id) {
-    $stmt = $this->conn->prepare("
-        SELECT dp.id_menu, dp.jumlah, m.nama_menu, m.harga
-        FROM detail_pesanan dp
-        JOIN menu m ON dp.id_menu = m.id_menu
-        WHERE dp.id_pesanan = ?
-    ");
-    $stmt->execute([$id]);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = $this->conn->prepare("
+            SELECT dp.id_menu, dp.jumlah, m.nama_menu, m.harga
+            FROM detail_pesanan dp
+            JOIN menu m ON dp.id_menu = m.id_menu
+            WHERE dp.id_pesanan = ?
+        ");
+        $stmt->execute([$id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // CREATE
-    public function tambahPesanan($id_pelanggan, $id_meja, $id_server, $tanggal_pesanan, $total_harga, $status_orderan) 
-    {
-    try {
-
+    public function tambahPesanan($id_pelanggan, $id_meja, $id_server, $tanggal_pesanan, $total_harga, $status_orderan) {
+        try {
             $sql = "INSERT INTO pesanan 
                     (id_pelanggan, id_meja, id_server, tanggal_pesanan, total_harga, status_orderan)
                     VALUES (:p, :m, :s, :t, :total, :st)";
@@ -138,32 +137,27 @@ class RestoranModel {
             ]);
 
         } catch (PDOException $e) {
-
-            echo "<b>PostgreSQL Error:</b><br>";
-            echo $e->getMessage();
+            echo "Error PostgreSQL: " . $e->getMessage();
             return false;
         }
     }
 
-    // READ (sudah ada getAllPesanan)
-        public function getPesananById($id) {
-        $query = "SELECT * FROM pesanan WHERE id_pesanan = :id";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
-        $stmt->execute();
+    public function getPesananById($id) {
+        $stmt = $this->conn->prepare("SELECT * FROM pesanan WHERE id_pesanan = :id");
+        $stmt->execute([':id' => $id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // UPDATE
     public function updatePesanan($id, $id_pelanggan, $id_meja, $id_server, $status) {
-        $stmt = $this->conn->prepare ("UPDATE pesanan SET
-                    id_pelanggan = :p,
-                    id_meja = :m,
-                    id_server = :s,
-                    status_orderan = :status
-                WHERE id_pesanan = :id");
+        $stmt = $this->conn->prepare("
+            UPDATE pesanan SET
+                id_pelanggan = :p,
+                id_meja = :m,
+                id_server = :s,
+                status_orderan = :status
+            WHERE id_pesanan = :id
+        ");
 
-        $stmt = $this->conn->prepare($stmt);
         return $stmt->execute([
             ':id' => $id,
             ':p' => $id_pelanggan,
@@ -173,177 +167,150 @@ class RestoranModel {
         ]);
     }
 
-        public function hapusDetailPesanan($id_detail)
-    {
-        $query = "DELETE FROM detail_pesanan WHERE id_detail_pesanan = :id";
-        $stmt = $this->conn->prepare($query);
-
-        $stmt->bindParam(':id', $id_detail, PDO::PARAM_INT);
-
-        return $stmt->execute();
+    public function hapusDetailPesanan($id_detail){
+        $stmt = $this->conn->prepare("DELETE FROM detail_pesanan WHERE id_detail_pesanan = :id");
+        return $stmt->execute([':id' => $id_detail]);
     }
 
-    // DELETE
     public function hapusPesanan($id) {
 
-        // HAPUS ITEM PESANAN
-        $stmt1 = "DELETE FROM detail_pesanan WHERE id_pesanan = :id";
-        $stmt1 = $this->conn->prepare($stmt1);
-        $stmt1->execute([':id' => $id]);
+        $this->conn->prepare("DELETE FROM detail_pesanan WHERE id_pesanan = :id")
+            ->execute([':id' => $id]);
 
-        // HAPUS PEMBAYARAN
-        $stmt2 = "DELETE FROM pembayaran WHERE id_pesanan = :id";
-        $stmt2 = $this->conn->prepare($stmt2);
-        $stmt2->execute([':id' => $id]);
+        $this->conn->prepare("DELETE FROM pembayaran WHERE id_pesanan = :id")
+            ->execute([':id' => $id]);
 
-        // HAPUS PESANAN UTAMA
-        $stmt3 = "DELETE FROM pesanan WHERE id_pesanan = :id";
-        $stmt3 = $this->conn->prepare($stmt3);
+        $stmt3 = $this->conn->prepare("DELETE FROM pesanan WHERE id_pesanan = :id");
         return $stmt3->execute([':id' => $id]);
     }
 
-    // ==== PELANGGAN ====
-    public function getAllPelanggan()
-    {
-        $sql = "SELECT * FROM pelanggan ORDER BY id_pelanggan ASC";
-        $stmt = $this->conn->prepare($sql);
+
+    // =========================
+    //       PELANGGAN
+    // =========================
+
+    public function getAllPelanggan(){
+        $stmt = $this->conn->prepare("SELECT * FROM pelanggan ORDER BY id_pelanggan ASC");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-        public function getPelangganById($id)
-    {
-        $sql = "SELECT * FROM pelanggan WHERE id_pelanggan = :id";
-        $stmt = $this->conn->prepare($sql);
+    public function getPelangganById($id){
+        $stmt = $this->conn->prepare("SELECT * FROM pelanggan WHERE id_pelanggan = :id");
         $stmt->execute([':id' => $id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-
-    public function tambahPelanggan($nama, $no_telp)
-    {
-        try {
-            $sql = "INSERT INTO pelanggan (nama, no_telepon)
-                    VALUES (:nama, :no_telp)";
-            $stmt = $this->conn->prepare($sql);
-
-            return $stmt->execute([
-                ':nama' => $nama,
-                ':no_telp' => $no_telp
-            ]);
-
-        } catch (PDOException $e) {
-            echo "<b>PostgreSQL Error:</b><br>" . $e->getMessage();
-            return false;
-        }
+    public function tambahPelanggan($nama, $no_telp){
+        $stmt = $this->conn->prepare("
+            INSERT INTO pelanggan (nama, no_telepon)
+            VALUES (:nama, :no_telp)
+        ");
+        return $stmt->execute([
+            ':nama' => $nama,
+            ':no_telp' => $no_telp
+        ]);
     }
 
-    public function hapusPelanggan($id)
-    {
-        try {
-            $sql = "DELETE FROM pelanggan WHERE id_pelanggan = :id";
-            $stmt = $this->conn->prepare($sql);
-            return $stmt->execute([':id' => $id]);
-        } catch (PDOException $e) {
-            echo "<b>PostgreSQL Error:</b><br>" . $e->getMessage();
-            return false;
-        }
+    public function updatePelanggan($id, $nama, $no_telepon){
+        $stmt = $this->conn->prepare("
+            UPDATE pelanggan 
+            SET nama = :nama,
+                no_telepon = :no_telepon
+            WHERE id_pelanggan = :id
+        ");
+
+        return $stmt->execute([
+            ':id'          => $id,
+            ':nama'        => $nama,
+            ':no_telepon'  => $no_telepon
+        ]);
     }
 
-    public function updatePelanggan($id, $nama, $no_telepon) {
-    $stmt = $this->conn->prepare("
-        UPDATE pelanggan
-        SET nama = :nama, no_telepon = :no_telepon
-        WHERE id_pelanggan = :id
-    ");
-
-    return $stmt->execute([
-        ':nama' => $nama,
-        ':no_telepon' => $no_telepon,
-        ':id' => $id
-    ]);
+    public function hapusPelanggan($id){
+        $stmt = $this->conn->prepare("DELETE FROM pelanggan WHERE id_pelanggan = :id");
+        return $stmt->execute([':id' => $id]);
     }
 
 
-    // ==== MEJA ====
 
-     public function getAllMeja()
-    {
-        $query = "SELECT * FROM meja ORDER BY id_meja ASC";
-        $stmt = $this->conn->prepare($query);
+    // =========================
+    //          MEJA
+    // =========================
+
+    public function getAllMeja(){
+        $stmt = $this->conn->prepare("SELECT * FROM meja ORDER BY id_meja ASC");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getMejaById($id)
-    {
-        $query = "SELECT * FROM meja WHERE id_meja = :id";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":id", $id, PDO::PARAM_INT);
-        $stmt->execute();
+    public function getMejaById($id){
+        $stmt = $this->conn->prepare("SELECT * FROM meja WHERE id_meja = :id");
+        $stmt->execute([':id'=>$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function tambahMeja($nomor_meja, $status_meja, $kapasitas)
-    {
-        $query = "INSERT INTO meja (nomor_meja, status_meja, kapasitas) 
-                  VALUES (:nomor_meja, :status_meja, :kapasitas)";
-        $stmt = $this->conn->prepare($query);
+    public function tambahMeja($nomor_meja, $status_meja, $kapasitas){
+        $stmt = $this->conn->prepare("
+            INSERT INTO meja (nomor_meja, status_meja, kapasitas) 
+            VALUES (:nomor_meja, :status_meja, :kapasitas)
+        ");
 
-        $stmt->bindParam(":nomor_meja", $nomor_meja);
-        $stmt->bindParam(":status_meja", $status_meja);
-        $stmt->bindParam(":kapasitas", $kapasitas);
-
-        return $stmt->execute();
+        return $stmt->execute([
+            ':nomor_meja' => $nomor_meja,
+            ':status_meja' => $status_meja,
+            ':kapasitas' => $kapasitas
+        ]);
     }
 
-    public function updateMeja($id, $nomor_meja, $status_meja, $kapasitas)
-    {
-        $query = "UPDATE meja 
-                  SET nomor_meja = :nomor_meja,
-                      status_meja = :status_meja,
-                      kapasitas = :kapasitas
-                  WHERE id_meja = :id";
+    public function updateMeja($id, $nomor_meja, $status_meja, $kapasitas){
+        $stmt = $this->conn->prepare("
+            UPDATE meja 
+            SET nomor_meja = :nomor_meja,
+                status_meja = :status_meja,
+                kapasitas = :kapasitas
+            WHERE id_meja = :id
+        ");
 
-        $stmt = $this->conn->prepare($query);
-
-        $stmt->bindParam(":id", $id);
-        $stmt->bindParam(":nomor_meja", $nomor_meja);
-        $stmt->bindParam(":status_meja", $status_meja);
-        $stmt->bindParam(":kapasitas", $kapasitas);
-
-        return $stmt->execute();
-    }
-    public function hapusMeja($id)
-    {
-        $query = "DELETE FROM meja WHERE id_meja = :id";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":id", $id);
-        return $stmt->execute();
+        return $stmt->execute([
+            ':id' => $id,
+            ':nomor_meja' => $nomor_meja,
+            ':status_meja' => $status_meja,
+            ':kapasitas' => $kapasitas
+        ]);
     }
 
-    // ==== FUNCTION & STORED PROCEDURE ====
+    public function hapusMeja($id){
+        $stmt = $this->conn->prepare("DELETE FROM meja WHERE id_meja = :id");
+        return $stmt->execute([':id' => $id]);
+    }
+
+
+    // =========================
+    //     FUNCTION/PROCEDURE
+    // =========================
+
     public function hitungTotalPesanan($id_pesanan){
         $stmt = $this->conn->prepare("SELECT hitung_total_pesanan(:id) AS total");
-        $stmt->bindParam(':id', $id_pesanan);
-        $stmt->execute();
+        $stmt->execute([':id'=>$id_pesanan]);
         return $stmt->fetchColumn();
     }
 
     public function cekStatusPembayaran($id_pesanan){
         $stmt = $this->conn->prepare("SELECT cek_status_pembayaran(:id) AS status");
-        $stmt->bindParam(':id', $id_pesanan);
-        $stmt->execute();
+        $stmt->execute([':id'=>$id_pesanan]);
         return $stmt->fetchColumn();
     }
 
     public function updateStatusSelesai($id_pesanan){
         $stmt = $this->conn->prepare("CALL update_status_selesai(:id)");
-        $stmt->bindParam(':id', $id_pesanan);
-        return $stmt->execute();
+        return $stmt->execute([':id' => $id_pesanan]);
     }
 
-    // ==== RESERVASI ====
+
+    // =========================
+    //       RESERVASI
+    // =========================
 
     public function getAllReservasi(){
         $stmt = $this->conn->prepare("
@@ -359,16 +326,17 @@ class RestoranModel {
 
     public function getReservasiById($id){
         $stmt = $this->conn->prepare("SELECT * FROM reservasi WHERE id_reservasi = :id");
-        $stmt->execute([':id' => $id]);
+        $stmt->execute([':id'=>$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-    
+
     public function tambahReservasi($id_pelanggan, $id_meja, $tanggal, $jam, $jumlah_orang, $status){
         $stmt = $this->conn->prepare("
-            INSERT INTO reservasi (id_pelanggan, id_meja, tanggal_reservasi, jam_reservasi, jumlah_orang, status_reservasi)
+            INSERT INTO reservasi 
+            (id_pelanggan, id_meja, tanggal_reservasi, jam_reservasi, jumlah_orang, status_reservasi)
             VALUES (:p, :m, :tgl, :jam, :jml, :st)
         ");
-    
+
         return $stmt->execute([
             ':p'   => $id_pelanggan,
             ':m'   => $id_meja,
@@ -378,7 +346,7 @@ class RestoranModel {
             ':st'  => $status
         ]);
     }
-    
+
     public function updateReservasi($id, $id_pelanggan, $id_meja, $tanggal, $jam, $jumlah_orang, $status){
         $stmt = $this->conn->prepare("
             UPDATE reservasi
@@ -390,7 +358,7 @@ class RestoranModel {
                 status_reservasi = :st
             WHERE id_reservasi = :id
         ");
-    
+
         return $stmt->execute([
             ':id'  => $id,
             ':p'   => $id_pelanggan,
@@ -401,138 +369,63 @@ class RestoranModel {
             ':st'  => $status
         ]);
     }
-    
+
     public function hapusReservasi($id){
         $stmt = $this->conn->prepare("DELETE FROM reservasi WHERE id_reservasi = :id");
-        return $stmt->execute([':id' => $id]);
+        return $stmt->execute([':id'=>$id]);
     }
-    
-      // ==== SERVER ====
 
-    public function getAllServer() {
+
+    // =========================
+    //         SERVER
+    // =========================
+
+    public function getAllServer(){
         $stmt = $this->conn->prepare("SELECT * FROM server ORDER BY id_server ASC");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    
-    public function getServerById($id) {
+
+    public function getServerById($id){
         $stmt = $this->conn->prepare("SELECT * FROM server WHERE id_server = :id");
-        $stmt->execute(['id' => $id]);
+        $stmt->execute([':id'=>$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-    
-    public function tambahServer($nama, $telp, $shift) {
-        $sql = "INSERT INTO server (nama_server, no_telepon, shift)
-                VALUES (:nama, :telp, :shift)";
-        $stmt = $this->conn->prepare($sql);
+
+    public function tambahServer($nama, $telp, $shift){
+        $stmt = $this->conn->prepare("
+            INSERT INTO server (nama_server, no_telepon, shift)
+            VALUES (:nama, :telp, :shift)
+        ");
+
         return $stmt->execute([
-            'nama' => $nama,
-            'telp' => $telp,
-            'shift' => $shift
+            ':nama'  => $nama,
+            ':telp'  => $telp,
+            ':shift' => $shift
         ]);
     }
-    
-    public function updateServer($id, $nama, $telp, $shift) {
-        $sql = "UPDATE server SET nama_server = :nama, no_telepon = :telp, shift = :shift
-                WHERE id_server = :id";
-        $stmt = $this->conn->prepare($sql);
+
+    public function updateServer($id, $nama, $telp, $shift){
+        $stmt = $this->conn->prepare("
+            UPDATE server 
+            SET nama_server = :nama,
+                no_telepon = :telp,
+                shift = :shift
+            WHERE id_server = :id
+        ");
+
         return $stmt->execute([
-            'nama' => $nama,
-            'telp' => $telp,
-            'shift' => $shift,
-            'id' => $id
+            ':id'    => $id,
+            ':nama'  => $nama,
+            ':telp'  => $telp,
+            ':shift' => $shift
         ]);
     }
-    
-    public function hapusServer($id) {
+
+    public function hapusServer($id){
         $stmt = $this->conn->prepare("DELETE FROM server WHERE id_server = :id");
-        return $stmt->execute(['id' => $id]);
+        return $stmt->execute([':id'=>$id]);
     }
 
-    // ===== LAPORAN SHIFT ==== 
-    public function getAllLaporanShift() {
-        $stmt = $this->conn->prepare("
-            SELECT l.*, s.nama_server 
-            FROM laporan_shift l
-            JOIN server s ON l.id_server = s.id_server
-            ORDER BY l.tanggal DESC
-        ");
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    // Tambah laporan shift
-    public function tambahLaporanShift($id_server, $tanggal, $mulai, $selesai, $total_penjualan, $total_pesanan, $shift) {
-        $stmt = $this->conn->prepare("
-            INSERT INTO laporan_shift 
-            (id_server, tanggal, waktu_mulai, waktu_selesai, total_penjualan, total_pesanan, shift)
-            VALUES (:server, :tgl, :mulai, :selesai, :jual, :pesan, :sh)
-        ");
-        return $stmt->execute([
-            ':server' => $id_server,
-            ':tgl'    => $tanggal,
-            ':mulai'  => $mulai,
-            ':selesai'=> $selesai,
-            ':jual'   => $total_penjualan,
-            ':pesan'  => $total_pesanan,
-            ':sh'     => $shift
-        ]);
-    }
-
-    // Ambil laporan shift berdasarkan ID
-    public function getLaporanShiftById($id_laporan) {
-        $stmt = $this->conn->prepare("SELECT * FROM laporan_shift WHERE id_laporan = :id");
-        $stmt->execute([':id' => $id_laporan]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
-    // Edit laporan shift
-    public function editLaporanShift($id_laporan, $id_server, $tanggal, $mulai, $selesai, $total_penjualan, $total_pesanan, $shift) {
-        $stmt = $this->conn->prepare("
-            UPDATE laporan_shift SET
-                id_server = :server,
-                tanggal = :tgl,
-                waktu_mulai = :mulai,
-                waktu_selesai = :selesai,
-                total_penjualan = :jual,
-                total_pesanan = :pesan,
-                shift = :sh
-            WHERE id_laporan = :id
-        ");
-        return $stmt->execute([
-            ':id'     => $id_laporan,
-            ':server' => $id_server,
-            ':tgl'    => $tanggal,
-            ':mulai'  => $mulai,
-            ':selesai'=> $selesai,
-            ':jual'   => $total_penjualan,
-            ':pesan'  => $total_pesanan,
-            ':sh'     => $shift
-        ]);
-    }
-
-    // Hapus laporan shift
-    public function hapusLaporanShift($id_laporan) {
-        $stmt = $this->conn->prepare("DELETE FROM laporan_shift WHERE id_laporan = :id");
-        return $stmt->execute([':id' => $id_laporan]);
-    }
-
-    //==== LAPORAN PENJUALAN ====
-    public function getPenjualanPerMenu(){
-        return $this->conn->query("SELECT * FROM mv_penjualan_per_menu")->fetchAll(PDO::FETCH_ASSOC);
-    }
-    public function getPenjualanPerShift(){
-        return $this->conn->query("SELECT * FROM v_penjualan_per_shift")->fetchAll(PDO::FETCH_ASSOC);
-    }
-    public function getPenjualanPerServer(){
-        return $this->conn->query("SELECT * FROM v_penjualan_per_server")->fetchAll(PDO::FETCH_ASSOC);
-    }
-    public function getMenuTerlaris(){
-        return $this->conn->query("SELECT * FROM v_menu_terlaris")->fetch(PDO::FETCH_ASSOC);
-    }
 }
-
-
-
-    
 ?>

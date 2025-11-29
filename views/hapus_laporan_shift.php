@@ -10,6 +10,6 @@ $id = $_GET['id'];
 
 $model->hapusLaporanShift($id);
 
-header("Location: LaporanShift.php?success=hapus");
+header("Location: LaporanSift.php?success=hapus");
 exit;
 ?>
