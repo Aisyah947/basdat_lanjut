@@ -23,7 +23,7 @@ $detail = $model->getDetailPesanan($id);
 // Data dropdown
 $pelanggan = $model->getAllPelanggan();
 $meja      = $model->getAllMeja();
-$server    = $model->getAllKaryawan();
+$server    = $model->getAllServer();
 $menu      = $model->getAllMenu();
 
 if (!$pesanan) {
@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Masukkan ulang yang baru
     foreach ($_POST['menu'] as $menuId => $jumlah) {
         if ($jumlah > 0) {
-            $model->tambahDetailPesanan($id, $menuId, $jumlah);
+            $model->tambahPesanan($id_pelanggan, $id_meja, $id_server, $tanggal_pesanan, $total_harga, $status_orderan);
         }
     }
 
@@ -86,12 +86,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <label>Server:</label>
     <select name="id_server" required>
         <?php foreach ($server as $s): ?>
-        <option value="<?= $s['id_karyawan'] ?>"
-            <?= $s['id_karyawan']==$pesanan['id_server']?'selected':'' ?>>
-            <?= $s['nama_karyawan'] ?>
+        <option value="<?= $s['id_server'] ?>"
+            <?= $s['id_server'] == $pesanan['id_server'] ? 'selected' : '' ?>>
+            <?= $s['nama_server'] ?>
         </option>
         <?php endforeach; ?>
     </select>
+
 
     <label>Status Pesanan:</label>
     <select name="status_orderan">
@@ -109,11 +110,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     ?>
 
-    <?php foreach ($menu as $mn): ?>
-        <label><?= $mn['nama_menu'] ?></label>
-        <input type="number" name="menu[<?= $mn['id_menu'] ?>]"
-               value="<?= $jumlahLama[$mn['id_menu']] ?? 0 ?>" min="0">
+    <?php foreach ($detail as $d): ?>
+    <label><?= $d['nama_menu'] ?></label>
+    <input type="number" name="menu[<?= $d['id_menu'] ?>]" 
+           value="<?= $d['jumlah'] ?>" min="1">
     <?php endforeach; ?>
+
 
     <br><br>
 

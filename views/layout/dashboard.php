@@ -1,5 +1,4 @@
 <?php include 'header.php'; ?>
-<?php include 'sidebar.php'; ?>
 
 <div class="main-content">
 

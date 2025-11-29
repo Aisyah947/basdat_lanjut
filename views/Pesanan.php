@@ -50,13 +50,17 @@ $allPesanan = $model->getAllPesanan();
                     echo implode(", ", $namaMenu);
                 ?>
             </td>
-            <td>Rp <?= number_format($model->hitungTotalPesanan($pesanan['id_pesanan']) ?? 0, 0, ',', '.') ?></td>
+            <td>Rp 
+                <?= number_format($model->hitungTotalPesanan($pesanan['id_pesanan']) 
+                ?? 0, 0, ',', '.') 
+                ?>
+            </td>
             <td><?= $model->cekStatusPembayaran($pesanan['id_pesanan']) ?></td>
 
             <td><?= $pesanan['status_orderan'] ?></td>
 
             <td>
-                <a href="edit_pesanan.php?id=<?= $pesanan['id_pesanan'] ?>" class="btn-edit">
+                <a href="views/edit_pesanan.php?id=<?= $pesanan['id_pesanan'] ?>" class="btn-edit">
                     Edit
                 </a>
 

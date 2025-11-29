@@ -30,8 +30,8 @@ switch ($action) {
         include 'views/Laporan.php';
         break;
 
-    case 'LaporanSift':
-        include 'views/LaporanSift.php';
+    case 'LaporanShift':
+        include 'views/LaporanShift.php';
         break;
 
     default:
