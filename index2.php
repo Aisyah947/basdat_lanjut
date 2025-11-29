@@ -1,40 +1,44 @@
 <?php
+include 'config/database.php';
+include 'models/RestoranModel.php';
+
 $action = $_GET['action'] ?? 'dashboard';
+
+$db = new Database();
+$conn = $db->getConnection();
+$model = new RestoranModel($conn);
 
 switch ($action) {
     case 'Menu':
-        include 'views/Menu.php';
-        break;
+        include '../views/Menu.php';
+        exit;
 
     case 'Pesanan':
         include 'views/Pesanan.php';
-        break;
+        exit;
 
     case 'Meja':
         include 'views/Meja.php';
-        break;
+        exit;
 
     case 'Reservasi':
         include 'views/Reservasi.php';
-        break;
+        exit;
 
     case 'Pelanggan':
         include 'views/Pelanggan.php';
-        break;
+        exit;
 
     case 'Server':
         include 'views/Server.php';
-        break;
+        exit;
 
     case 'Laporan':
         include 'views/Laporan.php';
-        break;
+        exit;
 
     case 'LaporanShift':
         include 'views/LaporanShift.php';
-        break;
-
-    default:
-        include 'views/layout/dashboard.php';
+        exit;
 }
 ?>
