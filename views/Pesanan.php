@@ -56,16 +56,10 @@ $allPesanan = $model->getAllPesanan();
             <td><?= $pesanan['status_orderan'] ?></td>
 
             <td>
-                <a href="edit_pesanan.php?id=<?= $pesanan['id_pesanan'] ?>" class="btn-edit">
-                    Edit
-                </a>
-
-                <a href="hapus_pesanan.php?id=<?= $pesanan['id_pesanan'] ?>" 
-                    class="btn-delete"
-                    onclick="return confirm('Yakin ingin menghapus pesanan ini?')">
-                    Hapus
-                </a>
-            </td>
+                <a href="views/edit_pesanan.php?id=<?= $pesanan['id_pesanan'] ?>" class="btn-edit">Edit</a>
+                <a href="hapus_pesanan.php?id=<?= $pesanan['id_pesanan'] ?>"
+                   onclick="return confirm('Hapus meja ini?')" class="btn-delete">Hapus</a>
+                </td>
         </tr>
         <?php endforeach; ?>
 

@@ -50,7 +50,7 @@ $laporan = $model->getAllLaporanShift();
             <td><?= $l['shift'] ?></td>
 
             <td>
-            <a href="edit_laporan_shift.php?id=<?= $l['id_laporan'] ?>" class="btn-edit">Edit</a>
+            <a href="views/edit_laporan_shift.php?id=<?= $l['id_laporan'] ?>" class="btn-edit">Edit</a>
 
     <a href="hapus_laporan_shift.php?id=<?= $l['id_laporan'] ?>" class="btn-delete"
        onclick="return confirm('Yakin ingin menghapus?')">Hapus</a>

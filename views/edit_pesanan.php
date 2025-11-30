@@ -86,9 +86,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <label>Server:</label>
     <select name="id_server" required>
         <?php foreach ($server as $s): ?>
-        <option value="<?= $s['id_karyawan'] ?>"
-            <?= $s['id_karyawan']==$pesanan['id_server']?'selected':'' ?>>
-            <?= $s['nama_karyawan'] ?>
+        <option value="<?= $s['id_server'] ?>"
+            <?= $s['id_server']==$pesanan['id_server']?'selected':'' ?>>
+            <?= $s['nama_server'] ?>
         </option>
         <?php endforeach; ?>
     </select>
@@ -101,24 +101,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <h3>Edit Item Menu</h3>
 
-    <?php
-    // mapping jumlah lama
+        <?php
+    // mapping jumlah lama dengan aman
     $jumlahLama = [];
     foreach ($detail as $d) {
-        $jumlahLama[$d['id_menu']] = $d['jumlah'];
+        // gunakan id_menu jika ada, kalau tidak id
+        $id = $d['id_menu'] ?? $d['id'] ?? null;
+        if ($id) {
+            $jumlahLama[$id] = $d['jumlah'] ?? 0;
+        }
     }
     ?>
-
-    <?php foreach ($menu as $mn): ?>
-        <label><?= $mn['nama_menu'] ?></label>
-        <input type="number" name="menu[<?= $mn['id_menu'] ?>]"
-               value="<?= $jumlahLama[$mn['id_menu']] ?? 0 ?>" min="0">
-    <?php endforeach; ?>
 
     <br><br>
 
     <button type="submit">Update</button>
-    <a href="Pesanan.php">Batal</a>
+    <a href="Pesanan.php" class="back-link">Batal</a>
 </form>
 
 <?php include 'layout/footer.php'; ?>

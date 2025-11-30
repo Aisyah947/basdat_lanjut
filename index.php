@@ -90,4 +90,6 @@ $allMeja = $model->getAllMeja();
     </table>
 </div>
 
-<?php include_once __DIR__ . '../layout/footer.php'; ?>
+<?php include __DIR__ . '/views/layout/footer.php';
+ ?>
+

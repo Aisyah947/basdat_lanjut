@@ -118,6 +118,30 @@ public function getMenuById($id){
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function tambahDetailPesanan($id_pesanan, $id_menu, $jumlah)
+{
+    $query = "INSERT INTO detail_pesanan (id_pesanan, id_menu, jumlah) 
+              VALUES (:id_pesanan, :id_menu, :jumlah)";
+    
+    $stmt = $this->conn->prepare($query);
+    $stmt->bindParam(':id_pesanan', $id_pesanan, PDO::PARAM_INT);
+    $stmt->bindParam(':id_menu', $id_menu, PDO::PARAM_INT);
+    $stmt->bindParam(':jumlah', $jumlah, PDO::PARAM_INT);
+    
+    return $stmt->execute();
+}
+
+
+    public function getAllKaryawan()
+    {
+        $query = "SELECT * FROM server ORDER BY nama_server ASC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+
+
     // CREATE
     public function tambahPesanan($id_pelanggan, $id_meja, $id_server, $tanggal_pesanan, $total_harga, $status_orderan) 
     {
@@ -336,8 +360,6 @@ public function hapusMeja($id)
         $stmt->execute();
         return $stmt->fetchColumn();
     }
-
-     
 
     public function cekStatusPembayaran($id_pesanan){
         $stmt = $this->conn->prepare("SELECT cek_status_pembayaran(:id) AS status");
