@@ -87,11 +87,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <select name="id_server" required>
         <?php foreach ($server as $s): ?>
         <option value="<?= $s['id_server'] ?>"
-<<<<<<< HEAD
             <?= $s['id_server']==$pesanan['id_server']?'selected':'' ?>>
-=======
             <?= $s['id_server'] == $pesanan['id_server'] ? 'selected' : '' ?>>
->>>>>>> f9b22a9c617832fef65d7a93c9af62d8da5cf006
             <?= $s['nama_server'] ?>
         </option>
         <?php endforeach; ?>
@@ -118,16 +115,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     ?>
 
-<<<<<<< HEAD
-=======
+
     <?php foreach ($detail as $d): ?>
     <label><?= $d['nama_menu'] ?></label>
     <input type="number" name="menu[<?= $d['id_menu'] ?>]" 
            value="<?= $d['jumlah'] ?>" min="1">
     <?php endforeach; ?>
-
-
->>>>>>> f9b22a9c617832fef65d7a93c9af62d8da5cf006
     <br><br>
 
     <button type="submit">Update</button>

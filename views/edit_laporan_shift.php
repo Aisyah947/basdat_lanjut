@@ -82,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </select>
 
     <button type="submit">Update</button>
-    <a href="LaporanSift.php" class="back-link">Batal</a>
+    <a href="LaporanShift.php" class="back-link">Batal</a>
 </form>
 
 <?php include 'layout/footer.php'; ?>
