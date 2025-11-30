@@ -1,6 +1,7 @@
 <?php
-include("../config/database.php");
-include("../models/RestoranModel.php");
+include_once __DIR__ . '/../config/database.php';
+include_once __DIR__ . '/../models/RestoranModel.php';
+
 
 $db = new Database();
 $conn = $db->getConnection();
