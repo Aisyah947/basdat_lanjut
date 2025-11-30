@@ -60,6 +60,12 @@ $allPesanan = $model->getAllPesanan();
             <td><?= $pesanan['status_orderan'] ?></td>
 
             <td>
+<<<<<<< HEAD
+                <a href="views/edit_pesanan.php?id=<?= $pesanan['id_pesanan'] ?>" class="btn-edit">Edit</a>
+                <a href="hapus_pesanan.php?id=<?= $pesanan['id_pesanan'] ?>"
+                   onclick="return confirm('Hapus meja ini?')" class="btn-delete">Hapus</a>
+                </td>
+=======
                 <a href="views/edit_pesanan.php?id=<?= $pesanan['id_pesanan'] ?>" class="btn-edit">
                     Edit
                 </a>
@@ -70,6 +76,7 @@ $allPesanan = $model->getAllPesanan();
                     Hapus
                 </a>
             </td>
+>>>>>>> f9b22a9c617832fef65d7a93c9af62d8da5cf006
         </tr>
         <?php endforeach; ?>
 

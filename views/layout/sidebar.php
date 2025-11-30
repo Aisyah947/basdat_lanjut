@@ -10,7 +10,7 @@
         </a>
     </div>
 
-    <div class="menu-section">Data Master</div>
+    <div class="menu-section">Data Restoran</div>
 
     <div class="menu-item <?= $action == 'Menu' ? 'active' : '' ?>">
         <a href="/basdat_lanjut/views/Menu.php">
