@@ -153,6 +153,7 @@ class RestoranModel {
         }
     }
 
+
     public function getDetailPesanan($id_pesanan)
     {
         $stmt = $this->conn->prepare("
@@ -163,6 +164,41 @@ class RestoranModel {
         ");
 
         $stmt->execute([':id' => $id_pesanan]);
+
+    }
+    public function tambahDetailPesanan($id_pesanan, $id_menu, $jumlah)
+    {
+        // ambil harga satuan dari menu
+        $stmtHarga = $this->conn->prepare("SELECT harga FROM menu WHERE id_menu = :id_menu");
+        $stmtHarga->execute([':id_menu' => $id_menu]);
+        $harga = $stmtHarga->fetchColumn();
+    
+        if (!$harga) {
+            throw new Exception("Harga menu tidak ditemukan");
+        }
+    
+        // insert detail pesanan
+        $query = "INSERT INTO detail_pesanan (id_pesanan, id_menu, jumlah, harga_satuan) 
+                  VALUES (:id_pesanan, :id_menu, :jumlah, :harga_satuan)";
+        
+        $stmt = $this->conn->prepare($query);
+    
+        return $stmt->execute([
+            ':id_pesanan'   => $id_pesanan,
+            ':id_menu'      => $id_menu,
+            ':jumlah'       => $jumlah,
+            ':harga_satuan' => $harga
+        ]);
+    }
+    
+
+
+    public function getAllKaryawan()
+    {
+        $query = "SELECT * FROM server ORDER BY nama_server ASC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     
@@ -378,12 +414,17 @@ class RestoranModel {
     }
 
     // ==== FUNCTION & STORED PROCEDURE ====
-    public function hitungTotalPesanan($id_pesanan){
-        $stmt = $this->conn->prepare("SELECT hitung_total_pesanan(:id) AS total");
-        $stmt->bindParam(':id', $id_pesanan);
+    public function hitungTotalPesanan($id_pesanan) {
+        $stmt = $this->conn->prepare("
+            SELECT COALESCE(SUM(d.jumlah * d.harga_satuan), 0) AS total
+            FROM detail_pesanan d
+            WHERE d.id_pesanan = :id_pesanan
+        ");
+        $stmt->bindParam(':id_pesanan', $id_pesanan, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchColumn();
     }
+    
 
     public function cekStatusPembayaran($id_pesanan){
         $stmt = $this->conn->prepare("SELECT cek_status_pembayaran(:id) AS status");

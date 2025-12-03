@@ -87,6 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <select name="id_server" required>
         <?php foreach ($server as $s): ?>
         <option value="<?= $s['id_server'] ?>"
+            <?= $s['id_server']==$pesanan['id_server']?'selected':'' ?>>
             <?= $s['id_server'] == $pesanan['id_server'] ? 'selected' : '' ?>>
             <?= $s['nama_server'] ?>
         </option>
@@ -102,25 +103,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <h3>Edit Item Menu</h3>
 
-    <?php
-    // mapping jumlah lama
+        <?php
+    // mapping jumlah lama dengan aman
     $jumlahLama = [];
     foreach ($detail as $d) {
-        $jumlahLama[$d['id_menu']] = $d['jumlah'];
+        // gunakan id_menu jika ada, kalau tidak id
+        $id = $d['id_menu'] ?? $d['id'] ?? null;
+        if ($id) {
+            $jumlahLama[$id] = $d['jumlah'] ?? 0;
+        }
     }
     ?>
 
-    <?php foreach ($detail as $d): ?>
-    <label><?= $d['nama_menu'] ?></label>
-    <input type="number" name="menu[<?= $d['id_menu'] ?>]" 
-           value="<?= $d['jumlah'] ?>" min="1">
-    <?php endforeach; ?>
 
+<h3>Edit Item Menu</h3>
 
-    <br><br>
+<?php
+// Buat mapping jumlah lama
+$jumlahLama = [];
+foreach ($detail as $d) {
+    $jumlahLama[$d['id_menu']] = $d['jumlah'];
+}
+?>
+
+<?php foreach ($menu as $mn): ?>
+    <?php
+    // jumlah lama jika ada, jika tidak default 0
+    $jumlah = isset($jumlahLama[$mn['id_menu']]) ? $jumlahLama[$mn['id_menu']] : 0;
+    ?>
+    
+    <label>
+        <?= $mn['nama_menu'] ?> (Rp <?= number_format($mn['harga'],0,',','.') ?>)
+    </label>
+
+    <input type="number" 
+           name="menu[<?= $mn['id_menu'] ?>]" 
+           value="<?= $jumlah ?>" 
+           min="0">
+<?php endforeach; ?>
+
 
     <button type="submit">Update</button>
-    <a href="Pesanan.php">Batal</a>
+    <a href="Pesanan.php" class="back-link">Batal</a>
 </form>
 
 <?php include 'layout/footer.php'; ?>

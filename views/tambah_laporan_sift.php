@@ -63,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     <br><br>
     <button type="submit">Tambah</button>
-    <a href="LaporanSift.php" class="back-link">Kembali</a>
+    <a href="LaporanShift.php" class="back-link">Batal</a>
 </form>
 
 <?php include 'layout/footer.php'; ?>

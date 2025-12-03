@@ -17,6 +17,7 @@ $menuLaris = $model->getMenuTerlaris();
 
 <!DOCTYPE html>
 <html>
+    
 <head>
     <title>Laporan Penjualan</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
@@ -40,6 +41,26 @@ $menuLaris = $model->getMenuTerlaris();
         <a class="nav-link" data-bs-toggle="tab" href="#laris">Menu Paling Laris</a>
     </li>
 </ul>
+<br>
+<div class="mb-3">
+    <input id="searchInput" type="text" class="form-control" placeholder="Cari disini...">
+</div>
+<script>
+document.getElementById("searchInput").addEventListener("keyup", function () {
+    let value = this.value.toLowerCase();
+    let tables = document.querySelectorAll(".table.table-striped");
+
+    tables.forEach(table => {
+        let rows = table.getElementsByTagName("tr");
+
+        for (let i = 1; i < rows.length; i++) {
+            let rowText = rows[i].innerText.toLowerCase();
+            rows[i].style.display = rowText.includes(value) ? "" : "none";
+        }
+    });
+});
+</script>
+
 
 <div class="tab-content mt-3">
 

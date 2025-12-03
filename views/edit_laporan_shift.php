@@ -81,9 +81,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <option <?= $data['shift']=='Malam'?'selected':'' ?> value="Malam">Malam</option>
     </select>
 
-    <br><br>
     <button type="submit">Update</button>
-    <a href="views/LaporanShift.php">Kembali</a>
+    <a href="LaporanShift.php" class="back-link">Batal</a>
 </form>
 
 <?php include 'layout/footer.php'; ?>
