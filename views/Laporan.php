@@ -45,6 +45,7 @@ $menuLaris = $model->getMenuTerlaris();
 <div class="mb-3">
     <input id="searchInput" type="text" class="form-control" placeholder="Cari disini...">
 </div>
+
 <script>
 document.getElementById("searchInput").addEventListener("keyup", function () {
     let value = this.value.toLowerCase();
@@ -83,13 +84,13 @@ document.getElementById("searchInput").addEventListener("keyup", function () {
             <tr>
                 <td><?= $row['nama_menu'] ?></td>
                 <td><?= $row['total_terjual'] ?></td>
-                <td><?= $row['total_pendapatan'] ?></td>
+                <td>Rp <?= number_format($row['total_pendapatan'], 2, ',', '.') ?></td>
             </tr>
             <?php endforeach; ?>
             <tr class="fw-bold">
                 <td>Total</td>
                 <td><?= $totalQty ?></td>
-                <td><?= $totalPendapatan ?></td>
+                <td>Rp <?= number_format($totalPendapatan, 2, ',', '.') ?></td>
             </tr>
         </table>
     </div>
@@ -109,13 +110,13 @@ document.getElementById("searchInput").addEventListener("keyup", function () {
             <tr>
                 <td><?= $row['shift'] ?></td>
                 <td><?= $row['total_pesanan'] ?></td>
-                <td><?= $row['total_penjualan'] ?></td>
+                <td>Rp <?= number_format($row['total_penjualan'], 2, ',', '.') ?></td>
             </tr>
             <?php endforeach; ?>
             <tr class="fw-bold">
                 <td>Total</td>
                 <td><?= $totalPesananShift ?></td>
-                <td><?= $totalPendapatanShift ?></td>
+                <td>Rp <?= number_format($totalPendapatanShift, 2, ',', '.') ?></td>
             </tr>
         </table>
     </div>
@@ -135,13 +136,13 @@ document.getElementById("searchInput").addEventListener("keyup", function () {
             <tr>
                 <td><?= $row['nama_server'] ?></td>
                 <td><?= $row['total_pesanan'] ?></td>
-                <td><?= $row['total_penjualan'] ?></td>
+                <td>Rp <?= number_format($row['total_penjualan'], 2, ',', '.') ?></td>
             </tr>
             <?php endforeach; ?>
             <tr class="fw-bold">
                 <td>Total</td>
                 <td><?= $totalPesananServer ?></td>
-                <td><?= $totalPendapatanServer ?></td>
+                <td>Rp <?= number_format($totalPendapatanServer, 2, ',', '.') ?></td>
             </tr>
         </table>
     </div>
@@ -154,7 +155,7 @@ document.getElementById("searchInput").addEventListener("keyup", function () {
             <tr>
                 <td><?= $menuLaris['nama_menu'] ?></td>
                 <td><?= $menuLaris['total_terjual'] ?></td>
-                <td><?= $menuLaris['total_pendapatan'] ?></td>
+                <td>Rp <?= number_format($menuLaris['total_pendapatan'], 2, ',', '.') ?></td>
             </tr>
         </table>
     </div>
@@ -164,4 +165,5 @@ document.getElementById("searchInput").addEventListener("keyup", function () {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
 <?php include 'layout/footer.php'; ?>
