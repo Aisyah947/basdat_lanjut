@@ -615,9 +615,12 @@ class RestoranModel {
     }
 
     //==== LAPORAN PENJUALAN ====
-    public function getPenjualanPerMenu(){
-        return $this->conn->query("SELECT * FROM mv_penjualan_per_menu")->fetchAll(PDO::FETCH_ASSOC);
-    }
+    public function getPenjualanPerMenu() {
+    $stmt = $this->conn->prepare("SELECT * FROM v_penjualan_per_menu ORDER BY total_terjual DESC");
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
     public function getPenjualanPerShift(){
         return $this->conn->query("SELECT * FROM v_penjualan_per_shift")->fetchAll(PDO::FETCH_ASSOC);
     }
