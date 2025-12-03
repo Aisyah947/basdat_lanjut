@@ -6,13 +6,11 @@ $db = new Database();
 $conn = $db->getConnection();
 $model = new RestoranModel($conn);
 
-// Ambil data untuk dropdown
 $pelanggan = $model->getAllPelanggan();
 $meja      = $model->getAllMeja();
-$server    = $model->getAllServer();
+$server    = $model->getAllKaryawan();   // perbaikan: getAllServer tidak ada
 $menu      = $model->getAllMenu();
 
-// Proses tambah pesanan
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $id_pelanggan = $_POST['id_pelanggan'];
@@ -20,24 +18,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_server    = $_POST['id_server'];
     $status       = $_POST['status_orderan'];
 
-    // Tambah pesanan utama
-    $id_pesanan = $model->tambahPesanan($id_pelanggan, $id_meja, $id_server, $status);
-
-    // Tambah detail item pesanan
-    if ($id_pesanan) {
-        foreach ($_POST['menu'] as $menuId => $jumlah) {
-            if ($jumlah > 0) {
-                $model->getDetailPesanan($id_pesanan, $menuId, $jumlah);
+    // hitung total harga dulu
+    $total = 0;
+    foreach ($_POST['menu'] as $menuId => $jumlah) {
+        if ($jumlah > 0) {
+            foreach ($menu as $mn) {
+                if ($mn['id_menu'] == $menuId) {
+                    $total += $mn['harga'] * $jumlah;
+                }
             }
         }
-
-        header("Location: Pesanan.php?success=tambah");
-        exit;
-    } else {
-        $error = "Gagal menambah pesanan.";
     }
+
+    // ambil tanggal hari ini
+    $tanggal = date("Y-m-d");
+
+    // Tambah pesanan utama
+    $model->tambahPesanan($id_pelanggan, $id_meja, $id_server, $tanggal, $total, $status);
+
+    // Ambil ID pesanan terakhir
+    $id_pesanan = $conn->lastInsertId();
+
+    // Tambah detail item pesanan
+    foreach ($_POST['menu'] as $menuId => $jumlah) {
+        if ($jumlah > 0) {
+            $model->tambahDetailPesanan($id_pesanan, $menuId, $jumlah);
+        }
+    }
+
+    header("Location: Pesanan.php?success=tambah");
+    exit;
 }
 ?>
+
 
 <?php include 'layout/header.php'; ?>
 
@@ -63,11 +76,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endforeach; ?>
     </select>
 
-    <label>Server / Pelayan:</label>
+    <label>Nama Pelayan:</label>
     <select name="id_server" required>
         <option value="">-- Pilih Server --</option>
         <?php foreach ($server as $s): ?>
-        <option value="<?= $s['id_karyawan'] ?>"><?= $s['nama_karyawan'] ?></option>
+        <option value="<?= $s['id_server'] ?>"><?= $s['nama_server'] ?></option>
         <?php endforeach; ?>
     </select>
 

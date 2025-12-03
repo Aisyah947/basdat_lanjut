@@ -118,17 +118,30 @@ class RestoranModel {
     }
 
     public function tambahDetailPesanan($id_pesanan, $id_menu, $jumlah)
-{
-    $query = "INSERT INTO detail_pesanan (id_pesanan, id_menu, jumlah) 
-              VALUES (:id_pesanan, :id_menu, :jumlah)";
+    {
+        // ambil harga satuan dari menu
+        $stmtHarga = $this->conn->prepare("SELECT harga FROM menu WHERE id_menu = :id_menu");
+        $stmtHarga->execute([':id_menu' => $id_menu]);
+        $harga = $stmtHarga->fetchColumn();
     
-    $stmt = $this->conn->prepare($query);
-    $stmt->bindParam(':id_pesanan', $id_pesanan, PDO::PARAM_INT);
-    $stmt->bindParam(':id_menu', $id_menu, PDO::PARAM_INT);
-    $stmt->bindParam(':jumlah', $jumlah, PDO::PARAM_INT);
+        if (!$harga) {
+            throw new Exception("Harga menu tidak ditemukan");
+        }
     
-    return $stmt->execute();
-}
+        // insert detail pesanan
+        $query = "INSERT INTO detail_pesanan (id_pesanan, id_menu, jumlah, harga_satuan) 
+                  VALUES (:id_pesanan, :id_menu, :jumlah, :harga_satuan)";
+        
+        $stmt = $this->conn->prepare($query);
+    
+        return $stmt->execute([
+            ':id_pesanan'   => $id_pesanan,
+            ':id_menu'      => $id_menu,
+            ':jumlah'       => $jumlah,
+            ':harga_satuan' => $harga
+        ]);
+    }
+    
 
 
     public function getAllKaryawan()

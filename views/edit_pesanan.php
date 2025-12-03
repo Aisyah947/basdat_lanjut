@@ -116,12 +116,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ?>
 
 
-    <?php foreach ($detail as $d): ?>
-    <label><?= $d['nama_menu'] ?></label>
-    <input type="number" name="menu[<?= $d['id_menu'] ?>]" 
-           value="<?= $d['jumlah'] ?>" min="1">
-    <?php endforeach; ?>
-    <br><br>
+<h3>Edit Item Menu</h3>
+
+<?php
+// Buat mapping jumlah lama
+$jumlahLama = [];
+foreach ($detail as $d) {
+    $jumlahLama[$d['id_menu']] = $d['jumlah'];
+}
+?>
+
+<?php foreach ($menu as $mn): ?>
+    <?php
+    // jumlah lama jika ada, jika tidak default 0
+    $jumlah = isset($jumlahLama[$mn['id_menu']]) ? $jumlahLama[$mn['id_menu']] : 0;
+    ?>
+    
+    <label>
+        <?= $mn['nama_menu'] ?> (Rp <?= number_format($mn['harga'],0,',','.') ?>)
+    </label>
+
+    <input type="number" 
+           name="menu[<?= $mn['id_menu'] ?>]" 
+           value="<?= $jumlah ?>" 
+           min="0">
+<?php endforeach; ?>
+
 
     <button type="submit">Update</button>
     <a href="Pesanan.php" class="back-link">Batal</a>
