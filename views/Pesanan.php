@@ -42,19 +42,34 @@ $allPesanan = $model->getAllPesanan();
 
             <td>
                 <?php
-                    $items = $model->getDetailPesanan($pesanan['id_pesanan']);
-                    $namaMenu = array_map(
-                        fn($i)=>$i['nama_menu']." (".$i['jumlah'].")", 
-                        $items
-                    );
-                    echo implode(", ", $namaMenu);
+                    // Ambil detail pesanan
+                    $items = $model->getDetailPesanan($pesanan['id_pesanan']) ?? [];
+
+                    // Gabungkan item duplikat
+                    $grouped = [];
+                    foreach ($items as $i) {
+                        $nama = $i['nama_menu'];
+                        if (!isset($grouped[$nama])) {
+                            $grouped[$nama] = 0;
+                        }
+                        $grouped[$nama] += $i['jumlah']; // jumlah ditotal
+                    }
+
+                    // Format tampilan
+                    $namaMenuFix = [];
+                    foreach ($grouped as $nama => $qty) {
+                        $namaMenuFix[] = "$nama ($qty)";
+                    }
+
+                    echo implode(", ", $namaMenuFix);
                 ?>
             </td>
+
             <td>Rp 
                 <?= number_format($model->hitungTotalPesanan($pesanan['id_pesanan']) 
-                ?? 0, 0, ',', '.') 
-                ?>
+                ?? 0, 0, ',', '.') ?>
             </td>
+
             <td><?= $model->cekStatusPembayaran($pesanan['id_pesanan']) ?></td>
 
             <td><?= $pesanan['status_orderan'] ?></td>

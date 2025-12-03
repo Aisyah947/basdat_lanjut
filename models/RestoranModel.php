@@ -164,8 +164,9 @@ class RestoranModel {
         ");
 
         $stmt->execute([':id' => $id_pesanan]);
-
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
     public function tambahDetailPesanan($id_pesanan, $id_menu, $jumlah)
     {
         // ambil harga satuan dari menu
