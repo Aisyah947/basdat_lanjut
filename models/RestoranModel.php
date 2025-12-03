@@ -360,12 +360,17 @@ class RestoranModel {
     }
 
     // ==== FUNCTION & STORED PROCEDURE ====
-    public function hitungTotalPesanan($id_pesanan){
-        $stmt = $this->conn->prepare("SELECT hitung_total_pesanan(:id) AS total");
-        $stmt->bindParam(':id', $id_pesanan);
+    public function hitungTotalPesanan($id_pesanan) {
+        $stmt = $this->conn->prepare("
+            SELECT COALESCE(SUM(d.jumlah * d.harga_satuan), 0) AS total
+            FROM detail_pesanan d
+            WHERE d.id_pesanan = :id_pesanan
+        ");
+        $stmt->bindParam(':id_pesanan', $id_pesanan, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchColumn();
     }
+    
 
     public function cekStatusPembayaran($id_pesanan){
         $stmt = $this->conn->prepare("SELECT cek_status_pembayaran(:id) AS status");
