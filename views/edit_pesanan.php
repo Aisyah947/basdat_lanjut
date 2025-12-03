@@ -42,19 +42,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Update pesanan utama
     $model->updatePesanan($id, $id_pelanggan, $id_meja, $id_server, $status);
 
-    // Hapus semua detail sebelumnya
+    // Hapus detail lama
     $model->hapusDetailPesanan($id);
 
-    // Masukkan ulang yang baru
+    // Masukkan ulang item pesanan
     foreach ($_POST['menu'] as $menuId => $jumlah) {
         if ($jumlah > 0) {
-            $model->tambahPesanan($id_pelanggan, $id_meja, $id_server, $tanggal_pesanan, $total_harga, $status_orderan);
+            $model->tambahDetailPesanan($id, $menuId, $jumlah);
         }
     }
 
     header("Location: Pesanan.php?success=update");
     exit;
 }
+
 ?>
 
 <?php include 'layout/header.php'; ?>
@@ -67,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <select name="id_pelanggan" required>
         <?php foreach ($pelanggan as $p): ?>
         <option value="<?= $p['id_pelanggan'] ?>" 
-            <?= $p['id_pelanggan']==$pesanan['id_pelanggan']?'selected':'' ?>>
+            <?= $p['id_pelanggan'] == $pesanan['id_pelanggan'] ? 'selected' : '' ?>>
             <?= $p['nama'] ?>
         </option>
         <?php endforeach; ?>
@@ -77,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <select name="id_meja" required>
         <?php foreach ($meja as $m): ?>
         <option value="<?= $m['id_meja'] ?>" 
-            <?= $m['id_meja']==$pesanan['id_meja']?'selected':'' ?>>
+            <?= $m['id_meja'] == $pesanan['id_meja'] ? 'selected' : '' ?>>
             Meja <?= $m['nomor_meja'] ?>
         </option>
         <?php endforeach; ?>
@@ -93,34 +94,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endforeach; ?>
     </select>
 
-
     <label>Status Pesanan:</label>
     <select name="status_orderan">
-        <option value="Diproses" <?= $pesanan['status_orderan']=='Diproses'?'selected':'' ?>>Diproses</option>
-        <option value="Selesai"  <?= $pesanan['status_orderan']=='Selesai'?'selected':'' ?>>Selesai</option>
+        <option value="Diproses" <?= $pesanan['status_orderan'] == 'Diproses' ? 'selected' : '' ?>>Diproses</option>
+        <option value="Selesai"  <?= $pesanan['status_orderan'] == 'Selesai' ? 'selected' : '' ?>>Selesai</option>
     </select>
 
     <h3>Edit Item Menu</h3>
 
     <?php
-    // mapping jumlah lama
+    // buat mapping jumlah lama
     $jumlahLama = [];
     foreach ($detail as $d) {
         $jumlahLama[$d['id_menu']] = $d['jumlah'];
     }
     ?>
 
-    <?php foreach ($detail as $d): ?>
-    <label><?= $d['nama_menu'] ?></label>
-    <input type="number" name="menu[<?= $d['id_menu'] ?>]" 
-           value="<?= $d['jumlah'] ?>" min="1">
+    <?php foreach ($menu as $mn): ?>
+        <?php
+        $jumlah = isset($jumlahLama[$mn['id_menu']]) ? $jumlahLama[$mn['id_menu']] : 0;
+        ?>
+        <label><?= $mn['nama_menu'] ?> (Rp <?= number_format($mn['harga'],0,',','.') ?>)</label>
+        <input type="number" name="menu[<?= $mn['id_menu'] ?>]" min="0" value="<?= $jumlah ?>">
     <?php endforeach; ?>
-
 
     <br><br>
 
     <button type="submit">Update</button>
-    <a href="Pesanan.php">Batal</a>
+    <a href="Pesanan.php" class="back-link">Batal</a>
 </form>
 
 <?php include 'layout/footer.php'; ?>

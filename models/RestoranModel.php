@@ -265,15 +265,15 @@ class RestoranModel {
         ]);
     }
 
-        public function hapusDetailPesanan($id_detail)
-    {
-        $query = "DELETE FROM detail_pesanan WHERE id_detail_pesanan = :id";
-        $stmt = $this->conn->prepare($query);
+    public function hapusDetailPesanan($id_pesanan){
+    $stmt = $this->conn->prepare("
+        DELETE FROM detail_pesanan 
+        WHERE id_pesanan = :id
+    ");
+    $stmt->bindParam(':id', $id_pesanan);
+    return $stmt->execute();
+}
 
-        $stmt->bindParam(':id', $id_detail, PDO::PARAM_INT);
-
-        return $stmt->execute();
-    }
 
     // DELETE
     public function hapusPesanan($id) {
