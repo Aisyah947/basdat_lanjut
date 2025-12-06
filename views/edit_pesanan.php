@@ -37,10 +37,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_pelanggan = $_POST['id_pelanggan'];
     $id_meja      = $_POST['id_meja'];
     $id_server    = $_POST['id_server'];
-    $status       = $_POST['status_orderan'];
+    $status = $_POST['status_orderan'];
+    $metode = $_POST['metode_pembayaran'];
+    $status_bayar = $_POST['status_pembayaran'];
 
     // Update pesanan utama
-    $model->updatePesanan($id, $id_pelanggan, $id_meja, $id_server, $status);
+    $model->updatePesanan($id, $id_pelanggan, $id_meja, $id_server, $status, $status_bayar, $metode);
 
     // Hapus detail lama
     $model->hapusDetailPesanan($id);
@@ -99,6 +101,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <option value="Diproses" <?= $pesanan['status_orderan'] == 'Diproses' ? 'selected' : '' ?>>Diproses</option>
         <option value="Selesai"  <?= $pesanan['status_orderan'] == 'Selesai' ? 'selected' : '' ?>>Selesai</option>
     </select>
+
+    <label>Status Pembayaran:</label>
+    <select name="status_pembayaran" required>
+        <option value="Belum Dibayar" <?= $pesanan['status_pembayaran'] == 'Belum Dibayar' ? 'selected' : '' ?>>Belum Dibayar</option>
+        <option value="Sudah Dibayar" <?= $pesanan['status_pembayaran'] == 'Sudah Dibayar' ? 'selected' : '' ?>>Sudah Dibayar</option>
+    </select>
+
+
+    <label>Metode Pembayaran:</label>
+    <select name="metode_pembayaran" required>
+        <option value="Tunai" <?= $pesanan['metode_pembayaran'] == 'Tunai' ? 'selected' : '' ?>>Tunai</option>
+        <option value="Transfer" <?= $pesanan['metode_pembayaran'] == 'Transfer' ? 'selected' : '' ?>>Transfer</option>
+        <option value="QRIS" <?= $pesanan['metode_pembayaran'] == 'QRIS' ? 'selected' : '' ?>>QRIS</option>
+    </select>
+
+
 
     <h3>Edit Item Menu</h3>
 
