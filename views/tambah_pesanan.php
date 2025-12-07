@@ -6,18 +6,22 @@ $db = new Database();
 $conn = $db->getConnection();
 $model = new RestoranModel($conn);
 
+$menu      = $model->getAllMenu();
 $pelanggan = $model->getAllPelanggan();
 $meja      = $model->getAllMeja();
-$server    = $model->getAllKaryawan();   // perbaikan: getAllServer tidak ada
-$menu      = $model->getAllMenu();
+$server    = $model->getAllServer();
+
+
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $id_pelanggan = $_POST['id_pelanggan'];
     $id_meja      = $_POST['id_meja'];
     $id_server    = $_POST['id_server'];
+    $status_bayar = $_POST['status_pembayaran'];
+    $metode = $_POST['metode_pembayaran'];
     $status       = $_POST['status_orderan'];
-
+    
     // hitung total harga dulu
     $total = 0;
     foreach ($_POST['menu'] as $menuId => $jumlah) {
@@ -34,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tanggal = date("Y-m-d");
 
     // Tambah pesanan utama
-    $model->tambahPesanan($id_pelanggan, $id_meja, $id_server, $tanggal, $total, $status);
+    $model->tambahPesanan($id_pelanggan, $id_meja, $id_server, $tanggal, $total, $status, $status_bayar, $metode);
 
     // Ambil ID pesanan terakhir
     $id_pesanan = $conn->lastInsertId();
@@ -88,6 +92,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <select name="status_orderan" required>
         <option value="Diproses">Diproses</option>
         <option value="Selesai">Selesai</option>
+    </select>
+    
+    <label>Status Pembayaran:</label>
+    <select name="status_pembayaran" required>
+        <option value="Belum Dibayar">Belum Dibayar</option>
+        <option value="Sudah Dibayar">Sudah Dibayar</option>
+    </select>
+
+
+    <label>Metode Pembayaran:</label>
+    <select name="metode_pembayaran" required>
+        <option value="Tunai">Tunai</option>
+        <option value="Transfer">Transfer</option>
+        <option value="QRIS">QRIS</option>
     </select>
 
     <h3>Pilih Menu</h3>
