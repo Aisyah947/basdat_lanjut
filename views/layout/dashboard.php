@@ -6,7 +6,7 @@
 
     <div class="content">
 
-        <h1 class="page-title">Dashboard</h1>
+        <h2>Dashboard Restoran</h2>
 
         <div class="cards">
             <div class="card">Total Menu: 50</div>

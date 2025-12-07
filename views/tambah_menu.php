@@ -11,8 +11,6 @@ $kategori = $model->getAllKategori();
 
 <?php include_once __DIR__ . '/layout/header.php'; ?>
 
-
-
     <h2>Tambah Menu Baru</h2>
 
     <form action="proses_tambah_menu.php" method="POST" enctype="multipart/form-data">

@@ -7,34 +7,11 @@ $db = new Database();
 $conn = $db->getConnection();
 $model = new RestoranModel($conn);
 
-// Ambil semua kategori
-$kategori = $model->getAllKategori();
 
-// Cek apakah ada filter kategori dari query string
+$kategori = $model->getAllKategori();
 $id_kategori = $_GET['kategori'] ?? null;
 
-// Ambil data menu sesuai kategori
-$menuData = $id_kategori 
-    ? $model->getMenuByKategori($id_kategori) 
-    : $model->getAllMenu();
-?>
 
-<?php
-include_once __DIR__ . '/../models/RestoranModel.php';
-include_once __DIR__ . '/../config/database.php';
-
-
-$db = new Database();
-$conn = $db->getConnection();
-$model = new RestoranModel($conn);
-
-// Ambil semua kategori
-$kategori = $model->getAllKategori();
-
-// Cek apakah ada filter kategori dari query string
-$id_kategori = $_GET['kategori'] ?? null;
-
-// Ambil data menu sesuai kategori
 $menuData = $id_kategori 
     ? $model->getMenuByKategori($id_kategori) 
     : $model->getAllMenu();
@@ -58,7 +35,6 @@ $menuData = $id_kategori
     </div>
 
     <!-- Filter Kategori -->
-    <!-- Filter Kategori -->
     <div class="kategori-filter">
         <a href="Menu.php" 
            class="btn btn-kategori <?= $id_kategori ? '' : 'active' ?>">
@@ -72,7 +48,6 @@ $menuData = $id_kategori
             </a>
         <?php endforeach; ?>
     </div>
-
 
     <!-- Grid Menu -->
     <div class="menu-grid">
