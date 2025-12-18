@@ -2,7 +2,7 @@
 include_once __DIR__ . '/../config/database.php';
 include_once __DIR__ . '/../models/RestoranModel.php';
 
-if (!isset($_GET['id'])) {
+if (!isset($_GET['id']) || empty($_GET['id'])) {
     die("ID Pesanan tidak ditemukan.");
 }
 
@@ -12,86 +12,118 @@ $db = new Database();
 $conn = $db->getConnection();
 $model = new RestoranModel($conn);
 
-// Ambil data pesanan utama
 $pesanan = $model->getPesananById($id);
+$detail  = $model->getDetailPesanan($id);
 
-// Ambil detail pesanan (list menu)
-$detail = $model->getDetailPesanan($id);
 
-?>
-<?php include 'layout/header.php'; ?>
 
-<a href="pesanan.php" class="btn btn-secondary mb-3">← Kembali</a>
+include 'layout/header.php'; ?>
 
-<h2>Detail Pesanan #<?= $pesanan['id_pesanan'] ?></h2>
+<div class="container mt-4">
 
-<div class="card mb-4 p-3">
-    <h5 class="mb-3">Informasi Pesanan</h5>
+    <!-- TOMBOL KEMBALI -->
+    <div class="mb-2">
+        <a href="pesanan.php" class="btn btn-sm btn-outline-secondary">
+            ← Kembali
+        </a>
+    </div>
 
-    <table class="table table-bordered">
-        <tr>
-            <th>Pelanggan</th>
-            <td><?= $pesanan['nama_pelanggan'] ?></td>
-        </tr>
-        <tr>
-            <th>Nomor Meja</th>
-            <td>Meja <?= $pesanan['nomor_meja'] ?></td>
-        </tr>
-        <tr>
-            <th>Server</th>
-            <td><?= $pesanan['nama_server'] ?></td>
-        </tr>
-        <tr>
-            <th>Status</th>
-            <td><?= $pesanan['status_orderan'] ?></td>
-        </tr>
-        <tr>
-            <th>Tanggal</th>
-            <td><?= $pesanan['tanggal_pesanan'] ?></td>
-        </tr>
-        <tr>
-            <th>Total Harga</th>
-            <td>Rp <?= number_format($pesanan['total_harga'], 0, ',', '.') ?></td>
-        </tr>
-    </table>
-</div>
+    <div class="row">
 
-<div class="card p-3">
-    <h5 class="mb-3">Detail Menu</h5>
+        <!-- INFO PESANAN -->
+        <div class="col-lg-7 col-md-9 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-body p-3">
+                    <table class="table table-sm table-borderless mb-0">
+                        <tr>
+                            <th width="20%">Pelanggan</th>
+                            <td><?= $pesanan['nama']; ?></td>
+                        </tr>
+                        <tr>
+                            <th>Nomor Meja</th>
+                            <td>Meja <?= $pesanan['nomor_meja']; ?></td>
+                        </tr>
+                        <tr>
+                            <th>Server</th>
+                            <td><?= $pesanan['nama_server']; ?></td>
+                        </tr>
+                        <tr>
+                            <th>Status</th>
+                            <td><?= $pesanan['status_orderan']; ?></td>
+                        </tr>
+                        <tr>
+                            <th>Tanggal</th>
+                            <td><?= $pesanan['tanggal_pesanan']; ?></td>
+                        </tr>
+                        <tr>
+                            <th>Total</th>
+                            <td class="fw-bold">
+                                Rp <?= number_format($pesanan['total_harga'], 0, ',', '.'); ?>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-    <table class="table table-striped table-bordered">
-        <thead class="table-dark">
-            <tr>
-                <th>Menu</th>
-                <th>Jumlah</th>
-                <th>Harga Satuan</th>
-                <th>Subtotal</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php
-            $grandTotal = 0;
-            foreach ($detail as $d):
-                $subtotal = $d['jumlah'] * $d['harga_satuan'];
-                $grandTotal += $subtotal;
-            ?>
-            <tr>
-                <td><?= $d['nama_menu'] ?></td>
-                <td><?= $d['jumlah'] ?></td>
-                <td>Rp <?= number_format($d['harga_satuan'], 0, ',', '.') ?></td>
-                <td>Rp <?= number_format($subtotal, 0, ',', '.') ?></td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
+        <!-- DETAIL MENU -->
+        <div class="col-lg-9">
+            <div class="card shadow-sm">
+                <div class="card-body p-3">
+                    <h5 class="mb-3 fw-bold">Detail Menu</h5>
 
-        <tfoot>
-            <tr class="table-secondary">
-                <th colspan="3" class="text-end">Total</th>
-                <th>Rp <?= number_format($grandTotal, 0, ',', '.') ?></th>
-            </tr>
-        </tfoot>
+                    <table class="table table-sm table-bordered mb-0">
+                        <thead class="table-light text-center">
+                            <tr>
+                                <th>Menu</th>
+                                <th width="80">Jumlah</th>
+                                <th width="120">Harga</th>
+                                <th width="120">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if (!empty($detail)) : ?>
+                                <?php foreach ($detail as $d) : ?>
+                                    <tr>
+                                        <td><?= $d['nama_menu']; ?></td>
+                                        <td class="text-center"><?= $d['jumlah']; ?></td>
+                                        <td>
+                                            Rp <?= number_format($d['harga_satuan'], 0, ',', '.'); ?>
+                                        </td>
+                                        <td>
+                                            Rp <?= number_format(
+                                                $d['jumlah'] * $d['harga_satuan'],
+                                                0,
+                                                ',',
+                                                '.'
+                                            ); ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else : ?>
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">
+                                        Belum ada menu
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
 
-    </table>
+                        <tfoot>
+                            <tr class="fw-bold table-secondary">
+                                <td colspan="3" class="text-end">Total</td>
+                                <td>
+                                    Rp <?= number_format($pesanan['total_harga'], 0, ',', '.'); ?>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
 </div>
 
 <?php include 'layout/footer.php'; ?>

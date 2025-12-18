@@ -22,20 +22,14 @@ $menuLaris = $model->getMenuTerlaris();
     <title>Laporan Penjualan</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <style>
-        /* Reset body untuk layout yang lebih baik */
         body {
             margin: 0;
             padding: 0;
             overflow-x: hidden;
+            background-color: #f8f9fa;
         }
-        
-        /* Container utama dengan flexbox */
-        .main-wrapper {
-            display: flex;
-            min-height: 100vh;
-        }
-        
-        /* Sidebar styling */
+
+        /* Sidebar */
         .sidebar {
             width: 250px;
             background-color: #4169E1;
@@ -46,39 +40,26 @@ $menuLaris = $model->getMenuTerlaris();
             z-index: 1000;
             color: white;
         }
-        
-        /* Content area */
+
+        /* Area konten utama */
         .content-wrapper {
-            margin-left: 250px;
+            margin-left: 250px; 
             width: calc(100% - 250px);
             padding: 2rem;
-            background-color: #f8f9fa;
             min-height: 100vh;
         }
-        
-        /* Card untuk konten */
+
+        /* Card konten */
         .content-card {
-            background: white;
+            background: #ffff;
             border-radius: 8px;
             padding: 2rem;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             width: 100%;
             max-width: 100%;
         }
+
         
-        /* Responsif untuk mobile */
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 100%;
-                position: relative;
-                min-height: auto;
-            }
-            
-            .content-wrapper {
-                margin-left: 0;
-                width: 100%;
-            }
-        }
     </style>
 </head>
 <body>

@@ -89,6 +89,9 @@ $allPesanan = $model->getAllPesanan();
 
             <!-- AKSI -->
             <td>
+                <a href="pesanan_detail.php?id=<?= $pesanan['id_pesanan'] ?>"class="btn btn-info">
+                    Detail
+                </a>    
                 <a href="edit_pesanan.php?id=<?= $pesanan['id_pesanan'] ?>" class="btn-edit">
                     Edit
                 </a>

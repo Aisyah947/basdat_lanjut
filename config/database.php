@@ -1,10 +1,10 @@
 <?php
 class Database {
     private $host = "localhost";
-    private $db_name = "db_restoran1";
+    private $db_name = "restoran_db";
     private $username = "postgres";
-    private $password = "12345678";
-    private $port = "5432";
+    private $password = "admin123";
+    private $port = "5433";
     public $conn;
 
     public function getConnection() {

@@ -1,7 +1,6 @@
 <?php
 class RestoranModel {
     private $conn;
-
     public function __construct($db){
         $this->conn = $db;
     }
@@ -122,20 +121,22 @@ class RestoranModel {
         $query = "
             SELECT 
                 p.id_pesanan,
-                p.id_pelanggan,
-                p.id_meja,
-                p.id_server,
                 p.tanggal_pesanan,
                 p.total_harga,
                 p.status_orderan,
+
+                pl.nama,
+                m.nomor_meja,
+                s.nama_server,
+
                 pb.status_pembayaran,
                 pb.metode_pembayaran
 
             FROM pesanan p
-
-            LEFT JOIN pembayaran pb 
-                ON p.id_pesanan = pb.id_pesanan
-
+            LEFT JOIN pelanggan pl ON p.id_pelanggan = pl.id_pelanggan
+            LEFT JOIN meja m ON p.id_meja = m.id_meja
+            LEFT JOIN server s ON p.id_server = s.id_server
+            LEFT JOIN pembayaran pb ON p.id_pesanan = pb.id_pesanan
             WHERE p.id_pesanan = :id
         ";
 
@@ -144,6 +145,7 @@ class RestoranModel {
 
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
 
     public function getDetailPesanan($id_pesanan)
     {
@@ -198,7 +200,7 @@ class RestoranModel {
             // mulai transaksi
             $this->conn->beginTransaction();
 
-            // 1. Insert ke tabel pesanan
+            //Insert ke tabel pesanan
             $sql = "INSERT INTO pesanan 
                     (id_pelanggan, id_meja, id_server, tanggal_pesanan, total_harga, status_orderan)
                     VALUES 
@@ -215,14 +217,14 @@ class RestoranModel {
                 ':so'    => $status_orderan
             ]);
 
-            // ambil id pesanan yang baru dibuat
+            //ambil id pesanan 
             $id_pesanan = $stmt->fetchColumn();
 
             if (!$id_pesanan) {
                 throw new Exception("Gagal mengambil ID pesanan");
             }
 
-            // 2. Insert ke tabel pembayaran
+            //Insert ke tabel pembayaran
             $stmt2 = $this->conn->prepare("
                 INSERT INTO pembayaran 
                 (id_pesanan, tanggal_pembayaran, subtotal, status_pembayaran, metode_pembayaran)
@@ -237,20 +239,17 @@ class RestoranModel {
                 ':mp'    => $metode_pembayaran
             ]);
 
-            // kalau semua sukses → simpan permanen
+            //sukses → simpan permanen
             $this->conn->commit();
 
             return $id_pesanan;
 
         } catch (Exception $e) {
-            // kalau error → batalkan semua
+            //error → batalkan semua
             $this->conn->rollBack();
             die("Error tambah pesanan: " . $e->getMessage());
         }
     }
-
-
-    
 
     //update pesanan
     public function updatePesanan(
@@ -355,9 +354,7 @@ class RestoranModel {
             ':metode'     => $metode,
             ':total'      => $total
         ]);
-    }
-
-    
+    }    
 
     // =========================================== PELANGGAN =================================
     public function getAllPelanggan()
@@ -432,23 +429,14 @@ class RestoranModel {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Update status meja
-    public function updateStatusMeja($id_meja, $status) {
-        $query = "UPDATE meja SET status_meja = :status WHERE id_meja = :id_meja";
+    public function getMejaById($id)
+    {
+        $query = "SELECT * FROM meja WHERE id_meja = :id";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':status', $status);
-        $stmt->bindParam(':id_meja', $id_meja);
-        return $stmt->execute();
-    }    
-
-    public function getMejaById($id_meja) {
-        $query = "SELECT * FROM meja WHERE id_meja = :id_meja";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':id_meja', $id_meja);
+        $stmt->bindParam(":id", $id, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-    
 
     public function tambahMeja($nomor_meja, $status_meja, $kapasitas)
     {
@@ -488,9 +476,6 @@ class RestoranModel {
         return $stmt->execute();
     }
 
-
-
-    // ==== FUNCTION & STORED PROCEDURE ====
     // =================================== PEMBAYARAN ==============================
     public function hitungTotalPesanan($id_pesanan) {
         $stmt = $this->conn->prepare("
@@ -502,7 +487,6 @@ class RestoranModel {
         $stmt->execute();
         return $stmt->fetchColumn();
     }
-    
 
     public function cekStatusPembayaran($id_pesanan){
         $stmt = $this->conn->prepare("SELECT cek_status_pembayaran(:id) AS status");
@@ -654,8 +638,12 @@ class RestoranModel {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getLaporanShiftById($id_laporan) {
+    $stmt = $this->conn->prepare("SELECT * FROM laporan_shift WHERE id_laporan = :id");
+    $stmt->execute([':id' => $id_laporan]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 
-    // Tambah laporan shift
     public function tambahLaporanShift($id_server, $tanggal, $mulai, $selesai, $total_penjualan, $total_pesanan, $shift) {
         $stmt = $this->conn->prepare("
             INSERT INTO laporan_shift 
@@ -673,14 +661,6 @@ class RestoranModel {
         ]);
     }
 
-    // Ambil laporan shift berdasarkan ID
-    public function getLaporanShiftById($id_laporan) {
-        $stmt = $this->conn->prepare("SELECT * FROM laporan_shift WHERE id_laporan = :id");
-        $stmt->execute([':id' => $id_laporan]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
-    // Edit laporan shift
     public function editLaporanShift($id_laporan, $id_server, $tanggal, $mulai, $selesai, $total_penjualan, $total_pesanan, $shift) {
         $stmt = $this->conn->prepare("
             UPDATE laporan_shift SET
@@ -705,7 +685,6 @@ class RestoranModel {
         ]);
     }
 
-    // Hapus laporan shift
     public function hapusLaporanShift($id_laporan) {
         $stmt = $this->conn->prepare("DELETE FROM laporan_shift WHERE id_laporan = :id");
         return $stmt->execute([':id' => $id_laporan]);
@@ -713,23 +692,10 @@ class RestoranModel {
 
     //============================================= LAPORAN PENJUALAN =====================================
     public function getPenjualanPerMenu() {
-        $sql = "
-            SELECT 
-                m.id_menu,
-                m.nama_menu,
-                SUM(dp.jumlah) AS total_terjual,
-                SUM(dp.jumlah * m.harga) AS total_pendapatan
-            FROM detail_pesanan dp
-            JOIN menu m ON dp.id_menu = m.id_menu
-            GROUP BY m.id_menu, m.nama_menu
-            ORDER BY total_terjual DESC
-        ";
-    
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt = $this->conn->query("SELECT * FROM v_penjualan_per_menu ORDER BY total_terjual DESC");
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    
 
     public function getPenjualanPerShift(){
         return $this->conn->query("SELECT * FROM v_penjualan_per_shift")->fetchAll(PDO::FETCH_ASSOC);
@@ -740,44 +706,6 @@ class RestoranModel {
     public function getMenuTerlaris(){
         return $this->conn->query("SELECT * FROM v_menu_terlaris")->fetch(PDO::FETCH_ASSOC);
     }
-
-    public function updateMenuSafe($id, $harga, $status) {
-        try {
-            // Mulai transaksi
-            $this->conn->beginTransaction();
-    
-            // Validasi konsistensi
-            if ($harga <= 0) {
-                throw new Exception("Harga tidak boleh kurang atau sama dengan 0");
-            }
-    
-            // Query update
-            $sql = "UPDATE menu 
-                    SET harga = :harga, status_ketersediaan = :status 
-                    WHERE id_menu = :id";
-    
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bindParam(':harga', $harga);
-            $stmt->bindParam(':status', $status);
-            $stmt->bindParam(':id', $id);
-    
-            $stmt->execute();
-    
-            // Commit transaksi
-            $this->conn->commit();
-    
-            return "Transaksi BERHASIL — Data menu diperbarui";
-    
-        } catch (Exception $e) {
-    
-            // Rollback jika ada error
-            $this->conn->rollBack();
-    
-            return "Transaksi GAGAL: " . $e->getMessage();
-        }
-    }
-    
-    
 }
 
 
