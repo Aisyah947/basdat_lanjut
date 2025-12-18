@@ -426,23 +426,25 @@ body {
 /* Grid */
 .menu-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 30px;
+    grid-template-columns: repeat(4, 1fr); /* 4 kolom */
+    gap: 20px;
+    margin-top: 20px;
+}
+/* CARD */
+.menu-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
-/* Card */
+/* GAMBAR */
 .menu-img {
     width: 100%;
-    height: 180px;          /* SESUAIKAN DENGAN DESAIN */
-    object-fit: cover;      /* POTONG TANPA GEPENG */
-    display: block;
-}
-
-.menu-img {
-    width: 100%;
-    height: 160px;
+    height: 180px;
     object-fit: cover;
-    border-radius: 8px;
 }
 
 .no-photo {
@@ -456,8 +458,29 @@ body {
     font-size: 14px;
 }
 
-.menu-info h3 {
-    margin: 10px 0 5px;
+/* RESPONSIVE */
+@media (max-width: 1200px) {
+    .menu-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .menu-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .menu-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* INFO */
+.menu-info {
+    padding: 15px;
+    flex-grow: 1;
 }
 
 .badge {
@@ -494,11 +517,12 @@ body {
     color: #555;
 }
 
-/* Button actions */
+/* ACTION */
 .card-actions {
     display: flex;
     justify-content: space-between;
-    margin-top: 10px;
+    padding: 12px 15px;
+    border-top: 1px solid #eee;
 }
 
 .edit-btn,
@@ -517,19 +541,7 @@ body {
     background: #e74c3c;
     color: white;
 }
-.menu-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-}
 
-.menu-card {
-    width: 100%;
-    border-radius: 12px;
-    overflow: hidden; /* WAJIB agar gambar ikut rounded */
-    background: #fff;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-}
 /* Tambah Menu */
 .modal-box {
     width: 600px;

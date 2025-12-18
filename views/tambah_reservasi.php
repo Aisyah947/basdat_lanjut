@@ -8,6 +8,7 @@ $model = new RestoranModel($conn);
 
 $pelanggan = $model->getAllPelanggan();
 $meja = $model->getAllMeja();
+
 ?>
 
 <?php include_once __DIR__ . '/layout/header.php'; ?>

@@ -25,11 +25,23 @@ switch ($action) {
         include 'views/Reservasi.php';
         exit;
 
+    case 'Reservasi_Tambah':
+        include 'views/tambah_reservasi.php';
+        exit;
+    
+    case 'Reservasi_Edit':
+        include 'views/edit_reservasi.php';
+        exit;
+
+    case 'Reservasi_Hapus':
+        include 'views/hapus_reservasi.php';
+        exit;
+
     case 'Pelanggan':
         include 'views/Pelanggan.php';
         exit;
 
-    case 'Server':
+    case 'Server'  :
         include 'views/Server.php';
         exit;
 
