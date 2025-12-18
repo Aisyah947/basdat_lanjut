@@ -9,15 +9,9 @@ $model = new RestoranModel($conn);
 $menu      = $model->getAllMenu();
 $pelanggan = $model->getAllPelanggan();
 $meja      = $model->getAllMeja();
-<<<<<<< HEAD
 $server    = $model->getAllKaryawan();  
 $menu      = $model->getAllMenu();
-=======
 $server    = $model->getAllServer();
-
-
->>>>>>> 07ab3bbef4a47252d2a454080e70525255a6216f
-
 $error = ""; // inisialisasi error
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -28,13 +22,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $status_bayar = $_POST['status_pembayaran'];
     $metode = $_POST['metode_pembayaran'];
     $status       = $_POST['status_orderan'];
-<<<<<<< HEAD
 
     // hitung total harga
-=======
     
     // hitung total harga dulu
->>>>>>> 07ab3bbef4a47252d2a454080e70525255a6216f
     $total = 0;
     foreach ($_POST['menu'] as $menuId => $jumlah) {
         if ($jumlah > 0) {
@@ -47,8 +38,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $tanggal = date("Y-m-d");
-
-<<<<<<< HEAD
     $error = "";
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -86,9 +75,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     }
-    
-    
-=======
     // Tambah pesanan utama
     $id_pesanan = $model->tambahPesanan(
     $id_pelanggan,
@@ -111,7 +97,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     header("Location: Pesanan.php?success=tambah");
     exit;
->>>>>>> 07ab3bbef4a47252d2a454080e70525255a6216f
 }
 ?>
 

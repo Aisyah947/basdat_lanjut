@@ -54,18 +54,15 @@ $allPesanan = $model->getAllPesanan();
                 }
                 $grouped[$nama] += $i['jumlah'];
             }
-
-<<<<<<< HEAD
+            ?>
             <td>
                 <a href="edit_pesanan.php?id=<?= $pesanan['id_pesanan'] ?>" class="btn-edit">
                     Edit
                 </a>
-=======
             $namaMenuFix = [];
             foreach ($grouped as $nama => $qty) {
                 $namaMenuFix[] = "$nama ($qty)";
             }
->>>>>>> 07ab3bbef4a47252d2a454080e70525255a6216f
 
             echo implode(", ", $namaMenuFix);
             ?>
