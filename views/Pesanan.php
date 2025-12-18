@@ -74,14 +74,14 @@ $allPesanan = $model->getAllPesanan();
 
         <!-- AKSI -->
         <td>
-            <a href="edit_pesanan.php?id=<?= $pesanan['id_pesanan'] ?>" class="btn-edit">
+            <a href="views/edit_pesanan.php?id=<?= $pesanan['id_pesanan'] ?>" class="btn-edit">
                 Edit
             </a>
 
             <a href="hapus_pesanan.php?id=<?= $pesanan['id_pesanan'] ?>" 
             class="btn-delete"
             onclick="return confirm('Yakin ingin menghapus pesanan ini?')">
-                Hapus
+                HapusF
             </a>
         </td>
     </tr>
