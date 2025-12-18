@@ -713,10 +713,23 @@ class RestoranModel {
 
     //============================================= LAPORAN PENJUALAN =====================================
     public function getPenjualanPerMenu() {
-    $stmt = $this->conn->prepare("SELECT * FROM v_penjualan_per_menu ORDER BY total_terjual DESC");
-    $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
+        $sql = "
+            SELECT 
+                m.id_menu,
+                m.nama_menu,
+                SUM(dp.jumlah) AS total_terjual,
+                SUM(dp.jumlah * m.harga) AS total_pendapatan
+            FROM detail_pesanan dp
+            JOIN menu m ON dp.id_menu = m.id_menu
+            GROUP BY m.id_menu, m.nama_menu
+            ORDER BY total_terjual DESC
+        ";
+    
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
 
     public function getPenjualanPerShift(){
         return $this->conn->query("SELECT * FROM v_penjualan_per_shift")->fetchAll(PDO::FETCH_ASSOC);

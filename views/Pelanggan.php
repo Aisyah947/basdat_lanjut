@@ -14,7 +14,7 @@ $dataPelanggan = $model->getAllPelanggan();
 <h2>Data Pelanggan</h2>
 
 <div>
-    <a href="views/tambah_pelanggan.php" class="btn btn-tambah">
+    <a href="tambah_pelanggan.php" class="btn btn-tambah">
         <i class="fa fa-plus"></i> Tambah Pelanggan
     </a>
 </div>
