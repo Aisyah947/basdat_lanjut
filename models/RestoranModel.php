@@ -6,7 +6,8 @@ class RestoranModel {
         $this->conn = $db;
     }
 
-    // ==== MENU ====
+    // ====================================== MENU ======================================
+    //data menu
     public function getAllMenu(){
         $stmt = $this->conn->prepare("
             SELECT m.*, km.nama_kategori 
@@ -18,6 +19,7 @@ class RestoranModel {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    //membaca dan menghitung statistik menu
     public function getMenuStatistics(){
         $stats = ['total_menu'=>0, 'makanan'=>0, 'minuman'=>0, 'dessert'=>0, 'snack'=>0];
         $stmtTotal = $this->conn->prepare("SELECT COUNT(*) FROM menu");
@@ -43,6 +45,7 @@ class RestoranModel {
         return $stats;
     }
 
+    //menambah menu baru
     public function insertMenu($nama, $id_kategori, $harga, $deskripsi, $status, $foto)
     {
         $stmt = $this->conn->prepare("
@@ -60,7 +63,7 @@ class RestoranModel {
         ]);
     }
     
-
+    //mengupdate data menu
     public function getMenuById($id){
         $stmt = $this->conn->prepare("
             SELECT m.*, k.nama_kategori 
@@ -93,28 +96,66 @@ class RestoranModel {
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
 
-    // ==== PESANAN ====
-    public function getAllPesanan(){
-        $stmt = $this->conn->prepare("
-            SELECT p.*, m.nomor_meja, pel.nama AS nama_pelanggan
-            FROM pesanan p
-            JOIN meja m ON p.id_meja = m.id_meja
-            JOIN pelanggan pel ON p.id_pelanggan = pel.id_pelanggan
-            ORDER BY p.id_pesanan ASC
-        ");
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    // =================================== PESANAN ==========================================
+    public function getAllPesanan() {
+    $stmt = $this->conn->prepare("
+        SELECT 
+            p.*,
+            pl.nama AS nama_pelanggan,
+            m.nomor_meja,
+            pb.status_pembayaran,
+            pb.metode_pembayaran
+
+        FROM pesanan p
+        JOIN pelanggan pl ON p.id_pelanggan = pl.id_pelanggan
+        JOIN meja m ON p.id_meja = m.id_meja
+        LEFT JOIN pembayaran pb ON p.id_pesanan = pb.id_pesanan
+        ORDER BY p.id_pesanan ASC
+    ");
+
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getDetailPesanan($id) {
-    $stmt = $this->conn->prepare("
-        SELECT dp.id_menu, dp.jumlah, m.nama_menu, m.harga
-        FROM detail_pesanan dp
-        JOIN menu m ON dp.id_menu = m.id_menu
-        WHERE dp.id_pesanan = ?
-    ");
-    $stmt->execute([$id]);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    public function getPesananById($id)
+    {
+        $query = "
+            SELECT 
+                p.id_pesanan,
+                p.id_pelanggan,
+                p.id_meja,
+                p.id_server,
+                p.tanggal_pesanan,
+                p.total_harga,
+                p.status_orderan,
+                pb.status_pembayaran,
+                pb.metode_pembayaran
+
+            FROM pesanan p
+
+            LEFT JOIN pembayaran pb 
+                ON p.id_pesanan = pb.id_pesanan
+
+            WHERE p.id_pesanan = :id
+        ";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute([':id' => $id]);
+
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function getDetailPesanan($id_pesanan)
+    {
+        $stmt = $this->conn->prepare("
+            SELECT dp.*, m.nama_menu, m.harga
+            FROM detail_pesanan dp
+            JOIN menu m ON dp.id_menu = m.id_menu
+            WHERE dp.id_pesanan = :id
+        ");
+
+        $stmt->execute([':id' => $id_pesanan]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function tambahDetailPesanan($id_pesanan, $id_menu, $jumlah)
@@ -141,84 +182,140 @@ class RestoranModel {
             ':harga_satuan' => $harga
         ]);
     }
-    
 
+    //tambah pesanan
+    public function tambahPesanan(
+        $id_pelanggan,
+        $id_meja,
+        $id_server,
+        $tanggal,
+        $total,
+        $status_orderan,
+        $status_pembayaran,
+        $metode_pembayaran
+    ) {
+        try {
+            // mulai transaksi
+            $this->conn->beginTransaction();
 
-    public function getAllKaryawan()
-    {
-        $query = "SELECT * FROM server ORDER BY nama_server ASC";
-        $stmt = $this->conn->prepare($query);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-    
-
-
-    // CREATE
-    public function tambahPesanan($id_pelanggan, $id_meja, $id_server, $tanggal_pesanan, $total_harga, $status_orderan) 
-    {
-    try {
-
+            // 1. Insert ke tabel pesanan
             $sql = "INSERT INTO pesanan 
                     (id_pelanggan, id_meja, id_server, tanggal_pesanan, total_harga, status_orderan)
-                    VALUES (:p, :m, :s, :t, :total, :st)";
+                    VALUES 
+                    (:p, :m, :s, :t, :total, :so)
+                    RETURNING id_pesanan";
 
             $stmt = $this->conn->prepare($sql);
-
-            return $stmt->execute([
+            $stmt->execute([
                 ':p'     => $id_pelanggan,
                 ':m'     => $id_meja,
                 ':s'     => $id_server,
-                ':t'     => $tanggal_pesanan,   
-                ':total' => $total_harga,       
-                ':st'    => $status_orderan     
+                ':t'     => $tanggal,
+                ':total' => $total,
+                ':so'    => $status_orderan
             ]);
 
-        } catch (PDOException $e) {
+            // ambil id pesanan yang baru dibuat
+            $id_pesanan = $stmt->fetchColumn();
 
-            echo "<b>PostgreSQL Error:</b><br>";
+            if (!$id_pesanan) {
+                throw new Exception("Gagal mengambil ID pesanan");
+            }
+
+            // 2. Insert ke tabel pembayaran
+            $stmt2 = $this->conn->prepare("
+                INSERT INTO pembayaran 
+                (id_pesanan, tanggal_pembayaran, subtotal, status_pembayaran, metode_pembayaran)
+                VALUES 
+                (:id, NOW(), :total, :sp, :mp)
+            ");
+
+            $stmt2->execute([
+                ':id'    => $id_pesanan,
+                ':total' => $total,
+                ':sp'    => $status_pembayaran,
+                ':mp'    => $metode_pembayaran
+            ]);
+
+            // kalau semua sukses → simpan permanen
+            $this->conn->commit();
+
+            return $id_pesanan;
+
+        } catch (Exception $e) {
+            // kalau error → batalkan semua
+            $this->conn->rollBack();
+            die("Error tambah pesanan: " . $e->getMessage());
+        }
+    }
+
+
+    
+
+    //update pesanan
+    public function updatePesanan(
+    $id,
+    $id_pelanggan,
+    $id_meja,
+    $id_server,
+    $status_orderan,
+    $status_pembayaran,
+    $metode_pembayaran){
+        try {
+            $this->conn->beginTransaction();
+
+            // UPDATE PESANAN
+            $stmt1 = $this->conn->prepare("
+                UPDATE pesanan SET
+                    id_pelanggan = :p,
+                    id_meja = :m,
+                    id_server = :s,
+                    status_orderan = :so
+                WHERE id_pesanan = :id
+            ");
+
+            $stmt1->execute([
+                ':id' => $id,
+                ':p'  => $id_pelanggan,
+                ':m'  => $id_meja,
+                ':s'  => $id_server,
+                ':so' => $status_orderan
+            ]);
+
+            // UPSERT PEMBAYARAN (kalau belum ada → insert, kalau ada → update)
+            $stmt2 = $this->conn->prepare("
+                INSERT INTO pembayaran (id_pesanan, status_pembayaran, metode_pembayaran)
+                VALUES (:id, :sp, :mp)
+                ON CONFLICT (id_pesanan) DO UPDATE
+                SET 
+                    status_pembayaran = EXCLUDED.status_pembayaran,
+                    metode_pembayaran = EXCLUDED.metode_pembayaran
+            ");
+
+            $stmt2->execute([
+                ':id' => $id,
+                ':sp' => $status_pembayaran,
+                ':mp' => $metode_pembayaran
+            ]);
+
+            $this->conn->commit();
+            return true;
+
+        } catch (PDOException $e) {
+            $this->conn->rollBack();
             echo $e->getMessage();
             return false;
         }
     }
 
-    // READ (sudah ada getAllPesanan)
-        public function getPesananById($id) {
-        $query = "SELECT * FROM pesanan WHERE id_pesanan = :id";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
-    // UPDATE
-    public function updatePesanan($id, $id_pelanggan, $id_meja, $id_server, $status) {
-        $stmt = $this->conn->prepare ("UPDATE pesanan SET
-                    id_pelanggan = :p,
-                    id_meja = :m,
-                    id_server = :s,
-                    status_orderan = :status
-                WHERE id_pesanan = :id");
-
-        $stmt = $this->conn->prepare($stmt);
-        return $stmt->execute([
-            ':id' => $id,
-            ':p' => $id_pelanggan,
-            ':m' => $id_meja,
-            ':s' => $id_server,
-            ':status' => $status
-        ]);
-    }
-
-        public function hapusDetailPesanan($id_detail)
-    {
-        $query = "DELETE FROM detail_pesanan WHERE id_detail_pesanan = :id";
-        $stmt = $this->conn->prepare($query);
-
-        $stmt->bindParam(':id', $id_detail, PDO::PARAM_INT);
-
-        return $stmt->execute();
-    }
+    public function hapusDetailPesanan($id_pesanan){
+    $stmt = $this->conn->prepare("
+        DELETE FROM detail_pesanan 
+        WHERE id_pesanan = :id
+    ");
+    $stmt->bindParam(':id', $id_pesanan);
+    return $stmt->execute();
+}
 
     // DELETE
     public function hapusPesanan($id) {
@@ -239,7 +336,30 @@ class RestoranModel {
         return $stmt3->execute([':id' => $id]);
     }
 
-    // ==== PELANGGAN ====
+        public function setPembayaranPesanan($id_pesanan, $metode, $total)
+    {
+        $stmt = $this->conn->prepare("
+            INSERT INTO pembayaran 
+            (id_pesanan, tanggal_pembayaran, total_bayar, metode_pembayaran, status_pembayaran)
+            VALUES 
+            (:id_pesanan, NOW(), :total, :metode, 'Lunas')
+            ON CONFLICT (id_pesanan) DO UPDATE
+            SET 
+                metode_pembayaran = EXCLUDED.metode_pembayaran,
+                total_bayar = EXCLUDED.total_bayar,
+                status_pembayaran = 'Lunas'
+        ");
+
+        return $stmt->execute([
+            ':id_pesanan' => $id_pesanan,
+            ':metode'     => $metode,
+            ':total'      => $total
+        ]);
+    }
+
+    
+
+    // =========================================== PELANGGAN =================================
     public function getAllPelanggan()
     {
         $sql = "SELECT * FROM pelanggan ORDER BY id_pelanggan ASC";
@@ -302,7 +422,7 @@ class RestoranModel {
     }
 
 
-    // ==== MEJA ====
+    // ======================================= MEJA ====================================
 
      public function getAllMeja()
     {
@@ -371,6 +491,7 @@ class RestoranModel {
 
 
     // ==== FUNCTION & STORED PROCEDURE ====
+    // =================================== PEMBAYARAN ==============================
     public function hitungTotalPesanan($id_pesanan) {
         $stmt = $this->conn->prepare("
             SELECT COALESCE(SUM(d.jumlah * d.harga_satuan), 0) AS total
@@ -396,7 +517,7 @@ class RestoranModel {
         return $stmt->execute();
     }
 
-    // ==== RESERVASI ====
+    // ================================== RESERVASI =================================
 
     public function getAllReservasi(){
         $stmt = $this->conn->prepare("
@@ -460,7 +581,7 @@ class RestoranModel {
         return $stmt->execute([':id' => $id]);
     }
     
-      // ==== SERVER ====
+      // ===================================== SERVER ======================================
 
     public function getAllServer() {
         $stmt = $this->conn->prepare("SELECT * FROM server ORDER BY id_server ASC");
@@ -502,17 +623,37 @@ class RestoranModel {
         return $stmt->execute(['id' => $id]);
     }
 
-    // ===== LAPORAN SHIFT ==== 
-    public function getAllLaporanShift() {
-        $stmt = $this->conn->prepare("
-            SELECT l.*, s.nama_server 
-            FROM laporan_shift l
-            JOIN server s ON l.id_server = s.id_server
-            ORDER BY l.tanggal DESC
-        ");
+        public function getAllKaryawan()
+    {
+        $query = "SELECT * FROM server ORDER BY nama_server ASC";
+        $stmt = $this->conn->prepare($query);
         $stmt->execute();
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    
+
+    // ======================================= LAPORAN SHIFT =================================
+    public function getAllLaporanShift() {
+    $stmt = $this->conn->prepare("
+        SELECT 
+            ls.id_laporan,
+            s.nama_server,
+            ls.tanggal,
+            ls.waktu_mulai,
+            ls.waktu_selesai,
+            ls.total_penjualan,
+            ls.total_pesanan,
+            ls.shift
+        FROM laporan_shift ls
+        JOIN server s ON ls.id_server = s.id_server
+        ORDER BY ls.id_laporan DESC
+    ");
+
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
 
     // Tambah laporan shift
     public function tambahLaporanShift($id_server, $tanggal, $mulai, $selesai, $total_penjualan, $total_pesanan, $shift) {
@@ -570,10 +711,13 @@ class RestoranModel {
         return $stmt->execute([':id' => $id_laporan]);
     }
 
-    //==== LAPORAN PENJUALAN ====
-    public function getPenjualanPerMenu(){
-        return $this->conn->query("SELECT * FROM mv_penjualan_per_menu")->fetchAll(PDO::FETCH_ASSOC);
-    }
+    //============================================= LAPORAN PENJUALAN =====================================
+    public function getPenjualanPerMenu() {
+    $stmt = $this->conn->prepare("SELECT * FROM v_penjualan_per_menu ORDER BY total_terjual DESC");
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
     public function getPenjualanPerShift(){
         return $this->conn->query("SELECT * FROM v_penjualan_per_shift")->fetchAll(PDO::FETCH_ASSOC);
     }

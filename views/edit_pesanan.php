@@ -37,24 +37,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_pelanggan = $_POST['id_pelanggan'];
     $id_meja      = $_POST['id_meja'];
     $id_server    = $_POST['id_server'];
-    $status       = $_POST['status_orderan'];
+    $status = $_POST['status_orderan'];
+    $metode = $_POST['metode_pembayaran'];
+    $status_bayar = $_POST['status_pembayaran'];
 
     // Update pesanan utama
-    $model->updatePesanan($id, $id_pelanggan, $id_meja, $id_server, $status);
+    $model->updatePesanan($id, $id_pelanggan, $id_meja, $id_server, $status, $status_bayar, $metode);
 
-    // Hapus semua detail sebelumnya
+    // Hapus detail lama
     $model->hapusDetailPesanan($id);
 
-    // Masukkan ulang yang baru
+    // Masukkan ulang item pesanan
     foreach ($_POST['menu'] as $menuId => $jumlah) {
         if ($jumlah > 0) {
-            $model->tambahPesanan($id_pelanggan, $id_meja, $id_server, $tanggal_pesanan, $total_harga, $status_orderan);
+            $model->tambahDetailPesanan($id, $menuId, $jumlah);
         }
     }
 
     header("Location: Pesanan.php?success=update");
     exit;
 }
+
 ?>
 
 <?php include 'layout/header.php'; ?>
@@ -67,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <select name="id_pelanggan" required>
         <?php foreach ($pelanggan as $p): ?>
         <option value="<?= $p['id_pelanggan'] ?>" 
-            <?= $p['id_pelanggan']==$pesanan['id_pelanggan']?'selected':'' ?>>
+            <?= $p['id_pelanggan'] == $pesanan['id_pelanggan'] ? 'selected' : '' ?>>
             <?= $p['nama'] ?>
         </option>
         <?php endforeach; ?>
@@ -77,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <select name="id_meja" required>
         <?php foreach ($meja as $m): ?>
         <option value="<?= $m['id_meja'] ?>" 
-            <?= $m['id_meja']==$pesanan['id_meja']?'selected':'' ?>>
+            <?= $m['id_meja'] == $pesanan['id_meja'] ? 'selected' : '' ?>>
             Meja <?= $m['nomor_meja'] ?>
         </option>
         <?php endforeach; ?>
@@ -87,34 +90,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <select name="id_server" required>
         <?php foreach ($server as $s): ?>
         <option value="<?= $s['id_server'] ?>"
-            <?= $s['id_server']==$pesanan['id_server']?'selected':'' ?>>
             <?= $s['id_server'] == $pesanan['id_server'] ? 'selected' : '' ?>>
             <?= $s['nama_server'] ?>
         </option>
         <?php endforeach; ?>
     </select>
 
-
     <label>Status Pesanan:</label>
     <select name="status_orderan">
-        <option value="Diproses" <?= $pesanan['status_orderan']=='Diproses'?'selected':'' ?>>Diproses</option>
-        <option value="Selesai"  <?= $pesanan['status_orderan']=='Selesai'?'selected':'' ?>>Selesai</option>
+        <option value="Diproses" <?= $pesanan['status_orderan'] == 'Diproses' ? 'selected' : '' ?>>Diproses</option>
+        <option value="Selesai"  <?= $pesanan['status_orderan'] == 'Selesai' ? 'selected' : '' ?>>Selesai</option>
     </select>
+
+    <label>Status Pembayaran:</label>
+    <select name="status_pembayaran" required>
+        <option value="Belum Dibayar" <?= $pesanan['status_pembayaran'] == 'Belum Dibayar' ? 'selected' : '' ?>>Belum Dibayar</option>
+        <option value="Sudah Dibayar" <?= $pesanan['status_pembayaran'] == 'Sudah Dibayar' ? 'selected' : '' ?>>Sudah Dibayar</option>
+    </select>
+
+
+    <label>Metode Pembayaran:</label>
+    <select name="metode_pembayaran" required>
+        <option value="Tunai" <?= $pesanan['metode_pembayaran'] == 'Tunai' ? 'selected' : '' ?>>Tunai</option>
+        <option value="Transfer" <?= $pesanan['metode_pembayaran'] == 'Transfer' ? 'selected' : '' ?>>Transfer</option>
+        <option value="QRIS" <?= $pesanan['metode_pembayaran'] == 'QRIS' ? 'selected' : '' ?>>QRIS</option>
+    </select>
+
+
 
     <h3>Edit Item Menu</h3>
 
-        <?php
-    // mapping jumlah lama dengan aman
+    <?php
+    // buat mapping jumlah lama
     $jumlahLama = [];
     foreach ($detail as $d) {
-        // gunakan id_menu jika ada, kalau tidak id
-        $id = $d['id_menu'] ?? $d['id'] ?? null;
-        if ($id) {
-            $jumlahLama[$id] = $d['jumlah'] ?? 0;
-        }
+        $jumlahLama[$d['id_menu']] = $d['jumlah'];
     }
     ?>
 
+<<<<<<< HEAD
 <?php
 // Buat mapping jumlah lama
 $jumlahLama = [];
@@ -139,6 +153,17 @@ foreach ($detail as $d) {
            min="0">
 <?php endforeach; ?>
 
+=======
+    <?php foreach ($menu as $mn): ?>
+        <?php
+        $jumlah = isset($jumlahLama[$mn['id_menu']]) ? $jumlahLama[$mn['id_menu']] : 0;
+        ?>
+        <label><?= $mn['nama_menu'] ?> (Rp <?= number_format($mn['harga'],0,',','.') ?>)</label>
+        <input type="number" name="menu[<?= $mn['id_menu'] ?>]" min="0" value="<?= $jumlah ?>">
+    <?php endforeach; ?>
+
+    <br><br>
+>>>>>>> 07ab3bbef4a47252d2a454080e70525255a6216f
 
     <button type="submit">Update</button>
     <a href="Pesanan.php" class="back-link">Batal</a>

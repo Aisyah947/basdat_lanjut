@@ -6,10 +6,17 @@ $db = new Database();
 $conn = $db->getConnection();
 $model = new RestoranModel($conn);
 
+$menu      = $model->getAllMenu();
 $pelanggan = $model->getAllPelanggan();
 $meja      = $model->getAllMeja();
+<<<<<<< HEAD
 $server    = $model->getAllKaryawan();  
 $menu      = $model->getAllMenu();
+=======
+$server    = $model->getAllServer();
+
+
+>>>>>>> 07ab3bbef4a47252d2a454080e70525255a6216f
 
 $error = ""; // inisialisasi error
 
@@ -18,9 +25,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_pelanggan = $_POST['id_pelanggan'];
     $id_meja      = $_POST['id_meja'];
     $id_server    = $_POST['id_server'];
+    $status_bayar = $_POST['status_pembayaran'];
+    $metode = $_POST['metode_pembayaran'];
     $status       = $_POST['status_orderan'];
+<<<<<<< HEAD
 
     // hitung total harga
+=======
+    
+    // hitung total harga dulu
+>>>>>>> 07ab3bbef4a47252d2a454080e70525255a6216f
     $total = 0;
     foreach ($_POST['menu'] as $menuId => $jumlah) {
         if ($jumlah > 0) {
@@ -34,6 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $tanggal = date("Y-m-d");
 
+<<<<<<< HEAD
     $error = "";
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -73,6 +88,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     
     
+=======
+    // Tambah pesanan utama
+    $id_pesanan = $model->tambahPesanan(
+    $id_pelanggan,
+    $id_meja,
+    $id_server,
+    $tanggal,
+    $total,
+    $status,
+    $status_bayar,
+    $metode
+);
+
+    // baru tambah detail pesanan
+    foreach ($_POST['menu'] as $menuId => $jumlah) {
+        if ($jumlah > 0) {
+            $model->tambahDetailPesanan($id_pesanan, $menuId, $jumlah);
+        }
+    }
+
+
+    header("Location: Pesanan.php?success=tambah");
+    exit;
+>>>>>>> 07ab3bbef4a47252d2a454080e70525255a6216f
 }
 ?>
 
@@ -116,6 +155,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <select name="status_orderan" required>
         <option value="Diproses">Diproses</option>
         <option value="Selesai">Selesai</option>
+    </select>
+    
+    <label>Status Pembayaran:</label>
+    <select name="status_pembayaran" required>
+        <option value="Belum Dibayar">Belum Dibayar</option>
+        <option value="Sudah Dibayar">Sudah Dibayar</option>
+    </select>
+
+
+    <label>Metode Pembayaran:</label>
+    <select name="metode_pembayaran" required>
+        <option value="Tunai">Tunai</option>
+        <option value="Transfer">Transfer</option>
+        <option value="QRIS">QRIS</option>
     </select>
 
     <h3>Pilih Menu</h3>

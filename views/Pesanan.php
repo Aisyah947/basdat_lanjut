@@ -14,66 +14,85 @@ $allPesanan = $model->getAllPesanan();
 <h2>Data Pesanan</h2>
 
 <div>
-    <a href="views/tambah_pesanan.php" class="btn btn-tambah">
+    <a href="tambah_pesanan.php" class="btn btn-tambah">
         <i class="fa fa-plus"></i> Tambah Pesanan Baru
     </a>
 </div>
-
 <br>
 
-<div class="action-buttons top-buttons">
-    <table class="table">
-        <tr>
-            <th>ID</th>
-            <th>Meja</th>
-            <th>Pelanggan</th>
-            <th>Item Pesanan</th>
-            <th>Total</th>
-            <th>Status Bayar</th>
-            <th>Status Pesanan</th>
-            <th>Aksi</th>
-        </tr>
+<table class="table">
+    <tr>
+        <th>ID</th>
+        <th>Tanggal</th>
+        <th>Meja</th>
+        <th>Pelanggan</th>
+        <th>Item Pesanan</th>
+        <th>Total</th>
+        <th>Status Bayar</th>
+        <th>Metode Pembayaran</th>
+        <th>Status Pesanan</th>
+        <th>Aksi</th>
+    </tr>
 
-        <?php foreach ($allPesanan as $pesanan): ?>
-        <tr>
-            <td><?= $pesanan['id_pesanan'] ?></td>
-            <td>Meja <?= $pesanan['nomor_meja'] ?></td>
-            <td><?= $pesanan['nama_pelanggan'] ?></td>
+    <?php foreach ($allPesanan as $pesanan): ?>
+    <tr>
+        <td><?= $pesanan['id_pesanan'] ?></td>
+        <td><?= date("d-m-Y H:i", strtotime($pesanan['tanggal_pesanan'])) ?></td>
+        <td>Meja <?= $pesanan['nomor_meja'] ?></td>
+        <td><?= $pesanan['nama_pelanggan'] ?></td>
 
-            <td>
-                <?php
-                    $items = $model->getDetailPesanan($pesanan['id_pesanan']);
-                    $namaMenu = array_map(
-                        fn($i)=>$i['nama_menu']." (".$i['jumlah'].")", 
-                        $items
-                    );
-                    echo implode(", ", $namaMenu);
-                ?>
-            </td>
-            <td>Rp 
-                <?= number_format($model->hitungTotalPesanan($pesanan['id_pesanan']) 
-                ?? 0, 0, ',', '.') 
-                ?>
-            </td>
-            <td><?= $model->cekStatusPembayaran($pesanan['id_pesanan']) ?></td>
+        <!-- ITEM PESANAN -->
+        <td>
+            <?php
+            $items = $model->getDetailPesanan($pesanan['id_pesanan']) ?? [];
 
-            <td><?= $pesanan['status_orderan'] ?></td>
+            $grouped = [];
+            foreach ($items as $i) {
+                $nama = $i['nama_menu'];
+                if (!isset($grouped[$nama])) {
+                    $grouped[$nama] = 0;
+                }
+                $grouped[$nama] += $i['jumlah'];
+            }
 
+<<<<<<< HEAD
             <td>
                 <a href="edit_pesanan.php?id=<?= $pesanan['id_pesanan'] ?>" class="btn-edit">
                     Edit
                 </a>
+=======
+            $namaMenuFix = [];
+            foreach ($grouped as $nama => $qty) {
+                $namaMenuFix[] = "$nama ($qty)";
+            }
+>>>>>>> 07ab3bbef4a47252d2a454080e70525255a6216f
 
-                <a href="hapus_pesanan.php?id=<?= $pesanan['id_pesanan'] ?>" 
-                    class="btn-delete"
-                    onclick="return confirm('Yakin ingin menghapus pesanan ini?')">
-                    Hapus
-                </a>
-            </td>
-        </tr>
-        <?php endforeach; ?>
+            echo implode(", ", $namaMenuFix);
+            ?>
+        </td>
 
-    </table>
-</div>
+
+        <td>Rp <?= number_format($model->hitungTotalPesanan($pesanan['id_pesanan']), 0, ',', '.') ?></td>
+
+        <td><?= $pesanan['status_pembayaran'] ?? 'Belum Dibayar' ?></td>
+        <td><?= $pesanan['metode_pembayaran'] ?? '-' ?></td>
+        <td><?= $pesanan['status_orderan'] ?></td>
+        
+
+        <!-- AKSI -->
+        <td>
+            <a href="views/edit_pesanan.php?id=<?= $pesanan['id_pesanan'] ?>" class="btn-edit">
+                Edit
+            </a>
+
+            <a href="hapus_pesanan.php?id=<?= $pesanan['id_pesanan'] ?>" 
+            class="btn-delete"
+            onclick="return confirm('Yakin ingin menghapus pesanan ini?')">
+                HapusF
+            </a>
+        </td>
+    </tr>
+    <?php endforeach; ?>
+</table>
 
 <?php include_once __DIR__ . '/layout/footer.php'; ?>
