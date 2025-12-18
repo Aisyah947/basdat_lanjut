@@ -128,7 +128,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     ?>
 
-<<<<<<< HEAD
 <?php
 // Buat mapping jumlah lama
 $jumlahLama = [];
@@ -153,7 +152,6 @@ foreach ($detail as $d) {
            min="0">
 <?php endforeach; ?>
 
-=======
     <?php foreach ($menu as $mn): ?>
         <?php
         $jumlah = isset($jumlahLama[$mn['id_menu']]) ? $jumlahLama[$mn['id_menu']] : 0;
@@ -163,7 +161,6 @@ foreach ($detail as $d) {
     <?php endforeach; ?>
 
     <br><br>
->>>>>>> 07ab3bbef4a47252d2a454080e70525255a6216f
 
     <button type="submit">Update</button>
     <a href="Pesanan.php" class="back-link">Batal</a>

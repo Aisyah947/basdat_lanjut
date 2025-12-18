@@ -468,6 +468,21 @@ class RestoranModel {
 
         return $stmt->execute();
     }
+
+    public function updateStatusMeja($id_meja, $status_meja)
+    {
+        $query = "UPDATE meja 
+                SET status_meja = :status_meja 
+                WHERE id_meja = :id_meja";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":status_meja", $status_meja);
+        $stmt->bindParam(":id_meja", $id_meja, PDO::PARAM_INT);
+
+        return $stmt->execute();
+    }
+
+
     public function hapusMeja($id)
     {
         $query = "DELETE FROM meja WHERE id_meja = :id";

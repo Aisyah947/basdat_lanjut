@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $conn->beginTransaction();
     
                 // Tambah pesanan utama
-                $model->tambahPesanan($id_pelanggan, $id_meja, $id_server, $tanggal, $total, $status);
+                $model->tambahPesanan($id_pelanggan, $id_meja, $id_server, $tanggal, $total, $status, date('Y-m-d H:i:s'), date('Y-m-d H:i:s'));
                 $id_pesanan = $conn->lastInsertId();
     
                 // Tambah detail item

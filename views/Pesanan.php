@@ -14,7 +14,7 @@ $allPesanan = $model->getAllPesanan();
 <h2>Data Pesanan</h2>
 
 <div>
-    <a href="views/tambah_pesanan.php" class="btn btn-tambah">
+    <a href="tambah_pesanan.php" class="btn btn-tambah">
         <i class="fa fa-plus"></i> Tambah Pesanan Baru
     </a>
 </div>
