@@ -312,14 +312,23 @@ class RestoranModel {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getMejaById($id)
-    {
-        $query = "SELECT * FROM meja WHERE id_meja = :id";
+    // Update status meja
+    public function updateStatusMeja($id_meja, $status) {
+        $query = "UPDATE meja SET status_meja = :status WHERE id_meja = :id_meja";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":id", $id, PDO::PARAM_INT);
+        $stmt->bindParam(':status', $status);
+        $stmt->bindParam(':id_meja', $id_meja);
+        return $stmt->execute();
+    }    
+
+    public function getMejaById($id_meja) {
+        $query = "SELECT * FROM meja WHERE id_meja = :id_meja";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id_meja', $id_meja);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+    
 
     public function tambahMeja($nomor_meja, $status_meja, $kapasitas)
     {
@@ -358,6 +367,8 @@ class RestoranModel {
         $stmt->bindParam(":id", $id);
         return $stmt->execute();
     }
+
+
 
     // ==== FUNCTION & STORED PROCEDURE ====
     public function hitungTotalPesanan($id_pesanan) {
@@ -572,6 +583,44 @@ class RestoranModel {
     public function getMenuTerlaris(){
         return $this->conn->query("SELECT * FROM v_menu_terlaris")->fetch(PDO::FETCH_ASSOC);
     }
+
+    public function updateMenuSafe($id, $harga, $status) {
+        try {
+            // Mulai transaksi
+            $this->conn->beginTransaction();
+    
+            // Validasi konsistensi
+            if ($harga <= 0) {
+                throw new Exception("Harga tidak boleh kurang atau sama dengan 0");
+            }
+    
+            // Query update
+            $sql = "UPDATE menu 
+                    SET harga = :harga, status_ketersediaan = :status 
+                    WHERE id_menu = :id";
+    
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':harga', $harga);
+            $stmt->bindParam(':status', $status);
+            $stmt->bindParam(':id', $id);
+    
+            $stmt->execute();
+    
+            // Commit transaksi
+            $this->conn->commit();
+    
+            return "Transaksi BERHASIL — Data menu diperbarui";
+    
+        } catch (Exception $e) {
+    
+            // Rollback jika ada error
+            $this->conn->rollBack();
+    
+            return "Transaksi GAGAL: " . $e->getMessage();
+        }
+    }
+    
+    
 }
 
 

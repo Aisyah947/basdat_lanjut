@@ -36,7 +36,7 @@ $dataPelanggan = $model->getAllPelanggan();
             <td><?= $p['nama'] ?></td>
             <td><?= $p['no_telepon'] ?></td>
             <td>
-                <a href="views/edit_pelanggan.php?id=<?= $p['id_pelanggan'] ?>" class="btn-edit">Edit</a>
+                <a href="edit_pelanggan.php?id=<?= $p['id_pelanggan'] ?>" class="btn-edit">Edit</a>
                 <a href="hapus_pelanggan.php?id=<?= $p['id_pelanggan'] ?>"
                     onclick="return confirm('Yakin ingin menghapus?')"
                     class="btn-delete">

@@ -15,7 +15,7 @@ $laporan = $model->getAllLaporanShift();
 <h2>Laporan Shift</h2>
 
 <div>
-    <a href="tambah_laporan_sift.php" class="btn btn-tambah">
+    <a href="views/tambah_laporan_sift.php" class="btn btn-tambah">
         + Tambah Laporan Shift
     </a>
 </div>
@@ -50,7 +50,7 @@ $laporan = $model->getAllLaporanShift();
             <td><?= $l['shift'] ?></td>
 
             <td>
-            <a href="views/edit_laporan_shift.php?id=<?= $l['id_laporan'] ?>" class="btn-edit">Edit</a>
+            <a href="edit_laporan_shift.php?id=<?= $l['id_laporan'] ?>" class="btn-edit">Edit</a>
 
     <a href="hapus_laporan_shift.php?id=<?= $l['id_laporan'] ?>" class="btn-delete"
        onclick="return confirm('Yakin ingin menghapus?')">Hapus</a>

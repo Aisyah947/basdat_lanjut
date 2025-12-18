@@ -10,17 +10,22 @@ $nama        = $_POST['nama_menu'];
 $id_kategori = $_POST['id_kategori'];
 $harga       = floatval($_POST['harga']);
 $deskripsi   = $_POST['deskripsi'];
-$status      = $_POST['status_ketersediaan'] == "1" ? true : false;
+$status      = $_POST['status_ketersediaan'] == "1";
 
 $foto = null;
 
-if (!empty($_FILES['foto_menu']['name'])) {
-    $foto = time() . "_" . $_FILES['foto_menu']['name'];
-    move_uploaded_file($_FILES['foto_menu']['tmp_name'], "../uploads/" . $foto);
+if (isset($_FILES['foto_menu']) && $_FILES['foto_menu']['error'] === 0) {
+    $tmp = $_FILES['foto_menu']['tmp_name'];
+    $mime = mime_content_type($tmp);
+
+    if (!in_array($mime, ['image/jpeg', 'image/png'])) {
+        die("Format gambar harus JPG atau PNG");
+    }
+
+    $foto = base64_encode(file_get_contents($tmp));
 }
 
 $model->insertMenu($nama, $id_kategori, $harga, $deskripsi, $status, $foto);
 
 header("Location: menu.php");
-exit();
-
+exit;

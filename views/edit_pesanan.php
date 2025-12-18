@@ -115,9 +115,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     ?>
 
-
-<h3>Edit Item Menu</h3>
-
 <?php
 // Buat mapping jumlah lama
 $jumlahLama = [];

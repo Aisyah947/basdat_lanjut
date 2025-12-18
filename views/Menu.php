@@ -38,7 +38,26 @@ $id_kategori = $_GET['kategori'] ?? null;
 $menuData = $id_kategori 
     ? $model->getMenuByKategori($id_kategori) 
     : $model->getAllMenu();
+
+// ====== Uji Coba ACID ======
+$hasil_test = "";
+
+if (isset($_GET['test'])) {
+
+    if ($_GET['test'] == "commit") {
+        // Percobaan berhasil
+        $hasil_test = $model->updateMenuSafe(3, 30000, true);
+    }
+
+    if ($_GET['test'] == "rollback") {
+        // Percobaan gagal -> harga negatif
+        $hasil_test = $model->updateMenuSafe(3, -1000, true);
+    }
+}
+
+
 ?>
+
 
 <?php include_once __DIR__ . '/layout/header.php'; ?>
 
@@ -79,12 +98,14 @@ $menuData = $id_kategori
         <?php foreach ($menuData as $menu): ?>
         
             <div class="menu-card">
-
-                <?php if (!empty($menu['foto_menu'])): ?>
-                    <img src="../uploads/<?= $menu['foto_menu'] ?>" class="menu-img">
-                <?php else: ?>
-                    <div class="no-photo">Tidak ada foto</div>
-                <?php endif; ?>
+            <?php if (!empty($menu['foto_menu'])): ?>
+                <img 
+                    src="data:image/jpeg;base64,<?= $menu['foto_menu'] ?>"
+                    class="menu-img"
+                >
+            <?php else: ?>
+                <div class="no-photo">Tidak ada foto</div>
+            <?php endif; ?>
 
                 <div class="menu-info">
                     <h3><?= $menu['nama_menu'] ?></h3>

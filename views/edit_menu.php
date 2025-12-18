@@ -62,7 +62,13 @@ $kategori = $model->getAllKategori();
             <label>Foto Menu</label>
 
             <?php if (!empty($menu['foto_menu'])): ?>
-                <img src="../uploads/<?= $menu['foto_menu'] ?>" width="150" class="preview-img">
+                <?php if (!empty($menu['foto_menu'])): ?>
+                <img 
+                    src="data:image/jpeg;base64,<?= $menu['foto_menu'] ?>" 
+                    width="150"
+                    class="preview-img">
+            <?php endif; ?>
+
             <?php endif; ?>
 
             <input type="file" name="foto_menu" accept="image/*">

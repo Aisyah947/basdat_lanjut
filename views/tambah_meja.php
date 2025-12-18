@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <?php include_once __DIR__ . '/layout/header.php'; ?>
 
-<h2 class="page-title">Tambah Menu</h2>
+<h2 class="page-title">Tambah Meja</h2>
 
 <?php if (isset($error)) echo "<p class='error-msg'>$error</p>"; ?>
 

@@ -60,7 +60,7 @@ $allPesanan = $model->getAllPesanan();
             <td><?= $pesanan['status_orderan'] ?></td>
 
             <td>
-                <a href="views/edit_pesanan.php?id=<?= $pesanan['id_pesanan'] ?>" class="btn-edit">
+                <a href="edit_pesanan.php?id=<?= $pesanan['id_pesanan'] ?>" class="btn-edit">
                     Edit
                 </a>
 

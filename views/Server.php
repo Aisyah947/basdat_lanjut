@@ -42,7 +42,7 @@ $serverList = $model->getAllServer();
                 <td><?= $s['no_telepon'] ?></td>
                 <td><?= $s['shift'] ?></td>
                 <td>
-                    <a class="btn-edit" href="views/edit_server.php?id=<?= $s['id_server'] ?>">Edit</a>
+                    <a class="btn-edit" href="edit_server.php?id=<?= $s['id_server'] ?>">Edit</a>
                     <a class="btn-delete" onclick="return confirm('Yakin mau hapus?')" href="hapus_server.php?id=<?= $s['id_server'] ?>">Hapus</a>
                 </td>
             </tr>
