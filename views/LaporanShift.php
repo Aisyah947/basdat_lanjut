@@ -15,7 +15,7 @@ $laporan = $model->getAllLaporanShift();
 <h2>Laporan Shift</h2>
 
 <div>
-    <a href="views/tambah_laporan_sift.php" class="btn btn-tambah">
+    <a href="views/tambah_laporan_sift.php">
     <a href="tambah_laporan_shift.php" class="btn btn-tambah">
     + Tambah Laporan Shift
     </a>
